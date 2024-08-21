@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" android:installLocation="auto">
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-feature android:name="android.hardware.vr.headtracking" android:version="1" android:required="true" />
+	<uses-feature android:name="android.hardware.vulkan.version" android:required="true" />
+	<uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+	<uses-feature android:name="android.hardware.touchscreen.multitouch" android:required="false" />
+	<uses-feature android:name="android.hardware.touchscreen.multitouch.distinct" android:required="false" />
+	<uses-feature android:name="com.oculus.feature.BOUNDARYLESS_APP" android:required="true" />
+	<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+	<uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
+	
+	<application android:label="@string/app_name" android:icon="@mipmap/app_icon" android:allowBackup="false" android:extractNativeLibs="true" android:networkSecurityConfig="@xml/network_sec_config">
+		<meta-data android:name="unityplayer.SkipPermissionsDialog" android:value="false" />
+		<meta-data android:name="com.samsung.android.vr.application.mode" android:value="vr_only" />
+		<meta-data android:name="com.oculus.ossplash.background" android:value="passthrough-contextual" />
+		<meta-data android:name="com.oculus.telemetry.project_guid" android:value="5e00606d-c6e7-41b7-9776-5da94301f696" />
+		<meta-data android:name="com.oculus.supportedDevices" android:value="quest2|questpro|eureka" />
+		<meta-data android:name="unity.splash-mode" android:value="0" />
+		<meta-data android:name="unity.splash-enable" android:value="True" />
+		<meta-data android:name="unity.launch-fullscreen" android:value="True" />
+		<meta-data android:name="unity.render-outside-safearea" android:value="True" />
+		<meta-data android:name="notch.config" android:value="portrait|landscape" />
+		<meta-data android:name="unity.auto-report-fully-drawn" android:value="true" />
+
+		<activity android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenLayout|screenSize|uiMode|density" android:launchMode="singleTask" android:name="com.trev3d.UnityPlayerActivityWithMediaProjector" android:excludeFromRecents="true" android:exported="true" android:screenOrientation="landscape" android:resizeableActivity="false" android:hardwareAccelerated="false">
+			<intent-filter>
+				<category android:name="android.intent.category.LAUNCHER" />
+				<category android:name="com.oculus.intent.category.VR" />
+				<action android:name="android.intent.action.MAIN" />
+			</intent-filter>
+			<meta-data android:name="com.oculus.vr.focusaware" android:value="true" />
+			<meta-data android:name="notch_support" android:value="true" />
+		</activity>
+		<service
+			android:name="com.trev3d.RecordNotificationService"
+			android:foregroundServiceType="mediaProjection"
+			android:exported="false">
+		</service>
+		<meta-data android:name="com.unity.xr.oculus.LowOverheadMode" android:value="false" />
+		<meta-data android:name="com.unity.xr.oculus.LateLatching" android:value="false" />
+		<meta-data android:name="com.unity.xr.oculus.LateLatchingDebug" android:value="false" />
+	</application>
+	<uses-feature android:name="com.oculus.feature.PASSTHROUGH" android:required="false" />
+</manifest>
