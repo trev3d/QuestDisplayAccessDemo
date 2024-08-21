@@ -12,3 +12,5 @@ Go into your Quest camera settings and set this if you haven't already.
 ⚠️ A single MediaProjector session only runs once on app launch. If interrupted (such as by the headset going to sleep) the session will not restart until you relaunch the app. I'll fix this soon :)
 
 ⚠️ Please don't use this for anything more than prototyping. I'm not an Android developer nor do I know its best practices. **I do know that copying an entire texture from the GPU into a byte array on the CPU every frame, and then reading that byte array into a Unity Texture2D, and then sending that back to the GPU is a bad bad idea.** Unfortunately due to my Android skill issue I don't know of a better way to do this at the moment.
+
+⚠️ This still isn't proper camera access. Any virtual elements will obscure physical objects in the image. If you need to track something, you can't render anything on top of it!
