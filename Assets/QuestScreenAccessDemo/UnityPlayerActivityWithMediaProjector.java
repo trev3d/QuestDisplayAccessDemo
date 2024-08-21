@@ -43,6 +43,10 @@ public class UnityPlayerActivityWithMediaProjector extends UnityPlayerActivity
 
 	public static int textureId;
 
+	private EGLDisplay eglDisplay;
+	private EGLContext eglContext;
+	private EGLSurface eglSurface;
+
     @Override protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
@@ -65,7 +69,7 @@ public class UnityPlayerActivityWithMediaProjector extends UnityPlayerActivity
 
 			startService(intent);
 
-			EGLDisplay eglDisplay = EGL14.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY);
+			eglDisplay = EGL14.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY);
 			if (eglDisplay == EGL14.EGL_NO_DISPLAY) {
 				throw new RuntimeException("Unable to get EGL14 display");
 			}
@@ -96,7 +100,7 @@ public class UnityPlayerActivityWithMediaProjector extends UnityPlayerActivity
 					EGL14.EGL_NONE
 			};
 
-			EGLContext eglContext = EGL14.eglCreateContext(eglDisplay, eglConfig, EGL14.EGL_NO_CONTEXT, attrib_list, 0);
+			eglContext = EGL14.eglCreateContext(eglDisplay, eglConfig, EGL14.EGL_NO_CONTEXT, attrib_list, 0);
 			if (eglContext == null || eglContext == EGL14.EGL_NO_CONTEXT) {
 				throw new RuntimeException("Failed to create EGL context");
 			}
@@ -104,7 +108,8 @@ public class UnityPlayerActivityWithMediaProjector extends UnityPlayerActivity
 			int[] surfaceAttribs = {
 					EGL14.EGL_NONE
 			};
-			EGLSurface eglSurface = EGL14.eglCreatePbufferSurface(eglDisplay, eglConfig, surfaceAttribs, 0);
+
+			eglSurface = EGL14.eglCreatePbufferSurface(eglDisplay, eglConfig, surfaceAttribs, 0);
 			if (eglSurface == null || eglSurface == EGL14.EGL_NO_SURFACE) {
 				throw new RuntimeException("Failed to create EGL surface");
 			}
@@ -118,7 +123,6 @@ public class UnityPlayerActivityWithMediaProjector extends UnityPlayerActivity
 
 			int[] textures = new int[1];
 			GLES20.glGenTextures(1, textures, 0);
-
 			textureId = textures[0];
 
 			GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId);
@@ -129,15 +133,21 @@ public class UnityPlayerActivityWithMediaProjector extends UnityPlayerActivity
 			GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
 			GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
 
+			GLES20.glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+
 			surfaceTexture = new SurfaceTexture(textureId);
 			surface = new Surface(surfaceTexture);
 
+			GLES20.glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+
 			UnityPlayer.UnitySendMessage(GAME_OBJECT_NAME, "InitializeExternalTexture", String.valueOf(textureId));
+
+			GLES20.glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
 
 			surfaceTexture.setOnFrameAvailableListener(new SurfaceTexture.OnFrameAvailableListener() {
 				@Override
 				public void onFrameAvailable(SurfaceTexture surfaceTexture) {
-					UnityPlayer.UnitySendMessage(GAME_OBJECT_NAME, "OnFrameAvailable", "");
+					surfaceTexture.updateTexImage();
 				}
 			});
 
