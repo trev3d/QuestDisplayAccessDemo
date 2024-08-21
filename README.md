@@ -2,6 +2,8 @@
 
 Developers want camera access on the Meta Quest. Meta hasn't let us have it yet. The next best thing is display access. Thanks to Android's MediaProjector API, you can access the display image in your Unity project with minimal latency as demonstrated in this horribly architected Unity project. **No PC or embedded browser required!**
 
+If you use this, I'd appreciate some sort of shoutout (either to my website @ trev3d.com or my Twitter @trev3d). While the code quality is terrible, I still spent several days hacking it together with zero Android developement experience. So if you find this helpful, I'd appreciate something for the time :)
+
 # ⚠️⚠️⚠️  Important! Please please read this! ⚠️⚠️⚠️
 
 ⚠️ **This version of the project has hard-coded values that expect your Quest camera resolution setting to be at 1024x1024.**
