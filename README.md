@@ -18,6 +18,11 @@ Developers want camera access on the Meta Quest. Meta hasn't let us have it yet.
 
 ⚠️ This still isn't proper camera access. Any virtual elements will obscure physical objects in the image. If you need to track something, you must not render anything on top of it!
 
+### Other info
+
+- The captured view is ~82 degrees in horizontal and vertical FOV on Quest 3
+- The texture is 1024x1024, at least on Quest 3
+
 ## Reference
 
 - [https://developer.oculus.com/documentation/native/native-media-projection/](https://developer.oculus.com/documentation/native/native-media-projection/)
