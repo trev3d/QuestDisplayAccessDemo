@@ -191,12 +191,13 @@
       "url": "https://packages.unity.com"
     },
     "jp.keijiro.apriltag": {
-      "version": "file:jp.keijiro.apriltag@1.0.2",
+      "version": "1.0.2",
       "depth": 0,
-      "source": "embedded",
+      "source": "registry",
       "dependencies": {
         "com.unity.burst": "1.6.5"
-      }
+      },
+      "url": "https://registry.npmjs.com"
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",
