@@ -6,8 +6,6 @@ Developers want camera access on the Meta Quest. Meta hasn't let us have it yet.
 
 ### To fix 
 
-⚠️ **The project assumes your Quest camera resolution setting is set to 1024x1024.** Go into your Quest camera settings and set this if you haven't already.
-
 ⚠️ The app only creates a single MediaProjector session on app launch. If the app is interrupted (such as by the headset going to sleep) the session will end and you'll need to restart the app. 
 
 ⚠️ The code for copying the texture to Unity is horribly unoptimized due to my lack of experience with Android's APIs. 
