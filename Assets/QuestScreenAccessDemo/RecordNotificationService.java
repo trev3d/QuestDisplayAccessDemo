@@ -18,8 +18,6 @@ import android.util.Log;
 
 import com.unity3d.player.UnityPlayerActivity;
 
-
-
 public class RecordNotificationService extends Service {
 
 	@Override

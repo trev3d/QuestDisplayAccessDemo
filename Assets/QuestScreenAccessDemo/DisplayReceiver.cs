@@ -1,35 +1,46 @@
-using OVR.OpenVR;
 using UnityEngine;
 
 public class DisplayReceiver : MonoBehaviour
 {
+	private const string Name = "DisplayReceiver";
+
 	private Texture2D externalTexture;
 	private int textureID;
-
 	[SerializeField] Material material;
 
-	public void InitializeExternalTexture(string textureIdStr)
+	private AndroidJavaClass UnityPlayer;
+	private AndroidJavaObject UnityPlayerActivityWithMediaProjection;
+	
+
+	private void Start()
 	{
-		textureID = int.Parse(textureIdStr);
-		int width = 1024;
-		int height = 1024;
+		gameObject.name = Name;
 
-		Debug.Log($"Initializing texture with ID {textureID}");
-		externalTexture = Texture2D.CreateExternalTexture(width, height, TextureFormat.RGBA32, false, false, new System.IntPtr(textureID));
+		UnityPlayer = new("com.unity3d.player.UnityPlayer");
+		UnityPlayerActivityWithMediaProjection = UnityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
 
-		externalTexture.filterMode = FilterMode.Bilinear;
-		externalTexture.wrapMode = TextureWrapMode.Clamp;
+		externalTexture = new Texture2D(1024, 1024, TextureFormat.ARGB32, false) { filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Clamp };
+		externalTexture.Apply();
 
-		material.SetTexture("_MainTex", externalTexture);
+		material.mainTexture = externalTexture;
+
+		Debug.Log("Created texture with id " + externalTexture.GetNativeTexturePtr());
 	}
 
-	private void LateUpdate()
+	private bool initialized = false;
+	private void Update()
 	{
-		if(textureID == 0) return;
+		if (initialized)
+		{
+			Debug.Log("Polling for new surface texture update");
+			UnityPlayerActivityWithMediaProjection.Call("requestSurfaceTextureUpdate");
+		}
+		else {
+			Debug.Log("Initializing surface and requesting screen capture from Unity");
+			UnityPlayerActivityWithMediaProjection.Call("initSurface", externalTexture.GetNativeTexturePtr().ToInt32(), externalTexture.width, externalTexture.height);
+			UnityPlayerActivityWithMediaProjection.Call("requestScreenCapturePermissionAndStart");
 
-		Debug.Log("Getting new frame");
-		
-		
-		externalTexture.UpdateExternalTexture(new System.IntPtr(textureID));
+			initialized = true;
+		}
 	}
 }

@@ -8,162 +8,146 @@ import android.content.Intent;
 import android.graphics.SurfaceTexture;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.VirtualDisplay;
-import android.media.Image;
-import android.media.ImageReader;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.opengl.EGL14;
-import android.opengl.EGLConfig;
 import android.opengl.EGLContext;
 import android.opengl.EGLDisplay;
 import android.opengl.EGLSurface;
 import android.opengl.GLES11Ext;
-import android.opengl.GLES20;
-import android.os.Bundle;
+import android.opengl.GLES30;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.Looper;
 import android.util.Log;
 import android.view.Surface;
 
-import com.unity3d.player.UnityPlayer;
 import com.unity3d.player.UnityPlayerActivity;
 
-import java.nio.ByteBuffer;
 import java.util.Objects;
 
-public class UnityPlayerActivityWithMediaProjector extends UnityPlayerActivity
+public class UnityPlayerActivityWithMediaProjector extends UnityPlayerActivity implements SurfaceTexture.OnFrameAvailableListener
 {
-	private static final String GAME_OBJECT_NAME = "DisplayReceiver";
 	private static final int REQUEST_MEDIA_PROJECTION = 1;
 	private MediaProjection projection;
+	private VirtualDisplay virtualDisplay;
 	private SurfaceTexture surfaceTexture;
 	private Surface surface;
-	private VirtualDisplay virtualDisplay;
 
-	public static int textureId;
+	int resultCode;
+	Intent resultData;
 
-	private EGLDisplay eglDisplay;
-	private EGLContext eglContext;
-	private EGLSurface eglSurface;
+	private int width;
+	private int height;
 
-    @Override protected void onCreate(Bundle savedInstanceState)
-    {
-        super.onCreate(savedInstanceState);
+	private static EGLContext unityContext = EGL14.EGL_NO_CONTEXT;
+	private static EGLDisplay unityDisplay = EGL14.EGL_NO_DISPLAY;
+	private static EGLSurface unityDrawSurface = EGL14.EGL_NO_SURFACE;
+	private static EGLSurface unityReadSurface = EGL14.EGL_NO_SURFACE;
+
+	// https://medium.com/xrpractices/external-texture-rendering-with-unity-and-android-b844bb7a35da
+
+	public void initSurface(int textureId, int width, int height) {
+
+		if(!Thread.currentThread().getName().equals("UnityMain")) {
+			Log.e(TAG, "Cannot init surface. Not called from render thread.");
+			return;
+		}
+
+		this.width = width;
+		this.height = height;
+
+		unityContext = EGL14.eglGetCurrentContext();
+		unityDisplay = EGL14.eglGetCurrentDisplay();
+		unityDrawSurface = EGL14.eglGetCurrentSurface(EGL14.EGL_DRAW);
+		unityReadSurface = EGL14.eglGetCurrentSurface(EGL14.EGL_READ);
+
+		if (unityContext == EGL14.EGL_NO_CONTEXT) {
+			Log.e(TAG, "UnityEGLContext is invalid -> Most probably wrong thread");
+		}
+
+		Log.i(TAG, "Setting up surface texture with id " + textureId + " and dimensions " + width + "x" + height);
+
+		EGL14.eglMakeCurrent(unityDisplay, unityDrawSurface, unityReadSurface, unityContext);
+
+		GLES30.glActiveTexture(GLES30.GL_TEXTURE0);
+		GLES30.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId);
+		GLES30.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR);
+		GLES30.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR);
+		GLES30.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE);
+		GLES30.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE);
+
+		surfaceTexture = new SurfaceTexture(textureId);
+		surfaceTexture.setDefaultBufferSize(width, height);
+
+		surface = new Surface(surfaceTexture);
+		surfaceTexture.setOnFrameAvailableListener(this);
+
+		Log.i(TAG, "Texture should be set up!");
+	}
+
+	public void requestScreenCapturePermissionAndStart() {
 		var manager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
 		startActivityForResult(manager.createScreenCaptureIntent(), REQUEST_MEDIA_PROJECTION);
-    }
+	}
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == REQUEST_MEDIA_PROJECTION) {
 			if (resultCode != Activity.RESULT_OK) {
-				Log.i(TAG, "User declined screen capture");
+				Log.i(TAG, "User declined screen capture. Asking again");
+
+				requestScreenCapturePermissionAndStart();
 				return;
 			}
 
-			Intent intent = new Intent(this, com.trev3d.RecordNotificationService.class);
-
-			intent.putExtra("code", resultCode);
-			intent.putExtra("data", data);
-
-			startService(intent);
-
-			eglDisplay = EGL14.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY);
-			if (eglDisplay == EGL14.EGL_NO_DISPLAY) {
-				throw new RuntimeException("Unable to get EGL14 display");
-			}
-
-			int[] version = new int[2];
-			if (!EGL14.eglInitialize(eglDisplay, version, 0, version, 1)) {
-				throw new RuntimeException("Unable to initialize EGL14");
-			}
-
-			int[] attribList = {
-					EGL14.EGL_RED_SIZE, 8,
-					EGL14.EGL_GREEN_SIZE, 8,
-					EGL14.EGL_BLUE_SIZE, 8,
-					EGL14.EGL_ALPHA_SIZE, 8,
-					EGL14.EGL_RENDERABLE_TYPE, EGL14.EGL_OPENGL_ES2_BIT,
-					EGL14.EGL_NONE
-			};
-
-			EGLConfig[] configs = new EGLConfig[1];
-			int[] numConfigs = new int[1];
-			if (!EGL14.eglChooseConfig(eglDisplay, attribList, 0, configs, 0, configs.length, numConfigs, 0)) {
-				throw new IllegalArgumentException("Failed to choose EGL config");
-			}
-			EGLConfig eglConfig = configs[0];
-
-			int[] attrib_list = {
-					EGL14.EGL_CONTEXT_CLIENT_VERSION, 2, // OpenGL ES 2.0
-					EGL14.EGL_NONE
-			};
-
-			eglContext = EGL14.eglCreateContext(eglDisplay, eglConfig, EGL14.EGL_NO_CONTEXT, attrib_list, 0);
-			if (eglContext == null || eglContext == EGL14.EGL_NO_CONTEXT) {
-				throw new RuntimeException("Failed to create EGL context");
-			}
-
-			int[] surfaceAttribs = {
-					EGL14.EGL_NONE
-			};
-
-			eglSurface = EGL14.eglCreatePbufferSurface(eglDisplay, eglConfig, surfaceAttribs, 0);
-			if (eglSurface == null || eglSurface == EGL14.EGL_NO_SURFACE) {
-				throw new RuntimeException("Failed to create EGL surface");
-			}
-
-			if (!EGL14.eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext)) {
-				throw new RuntimeException("Failed to make EGL context current");
-			}
-
-			final int width = 1024;
-			final int height = 1024;
-
-			int[] textures = new int[1];
-			GLES20.glGenTextures(1, textures, 0);
-			textureId = textures[0];
-
-			GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId);
-
-			// Set texture parameters
-			GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
-			GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
-			GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
-			GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
-
-			GLES20.glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
-
-			surfaceTexture = new SurfaceTexture(textureId);
-			surface = new Surface(surfaceTexture);
-
-			GLES20.glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
-
-			UnityPlayer.UnitySendMessage(GAME_OBJECT_NAME, "InitializeExternalTexture", String.valueOf(textureId));
-
-			GLES20.glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
-
-			surfaceTexture.setOnFrameAvailableListener(new SurfaceTexture.OnFrameAvailableListener() {
-				@Override
-				public void onFrameAvailable(SurfaceTexture surfaceTexture) {
-					surfaceTexture.updateTexImage();
-				}
-			});
-
-			new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-				@Override
-				public void run() {
-
-					projection = ((MediaProjectionManager) Objects.requireNonNull(getSystemService(Context.MEDIA_PROJECTION_SERVICE))).
-							getMediaProjection(resultCode, data);
-
-					virtualDisplay = projection.createVirtualDisplay("ScreenCapture",
-							width, height, 300,
-							DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-							surface, null, null);
-				}
-			}, 1000);
+			this.resultCode = resultCode;
+			this.resultData = data;
 		}
+
+		startScreenCapture();
+	}
+
+	public void startScreenCapture() {
+
+		if(surface == null) return;
+
+		Log.i(TAG, "starting screen capture");
+
+		Intent intent = new Intent(this, com.trev3d.RecordNotificationService.class);
+		startService(intent);
+
+		new Handler(Looper.getMainLooper()).postDelayed(() -> {
+
+			var manager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+			projection = manager.getMediaProjection(resultCode, resultData);
+
+			virtualDisplay = projection.createVirtualDisplay("ScreenCapture",
+					width, height, 300,
+					DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+					surface, null, null);
+
+			Log.i(TAG, "screen capture started!");
+
+		}, 500);
+	}
+
+	private boolean newFrameAvailable;
+
+	public void requestSurfaceTextureUpdate() {
+		if(!newFrameAvailable) return;
+
+		if(!Thread.currentThread().getName().equals("UnityMain")) {
+			Log.e(TAG, "Not called from render thread and hence update texture will fail");
+			return;
+		}
+
+		Log.i(TAG, "Updating texture image");
+		surfaceTexture.updateTexImage();
+		newFrameAvailable = false;
+	}
+
+	@Override
+	public void onFrameAvailable(SurfaceTexture surfaceTexture) {
+		newFrameAvailable = true;
 	}
 }
