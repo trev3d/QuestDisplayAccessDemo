@@ -19,8 +19,11 @@ public class DisplayReceiver : MonoBehaviour
 		UnityPlayer = new("com.unity3d.player.UnityPlayer");
 		UnityPlayerActivityWithMediaProjection = UnityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
 
-		externalTexture = new Texture2D(1024, 1024, TextureFormat.ARGB32, false) { filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Clamp };
+		externalTexture = new Texture2D(1024, 1024, TextureFormat.RGBA32, false) { filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Clamp };
+
 		externalTexture.Apply();
+
+		
 
 		material.mainTexture = externalTexture;
 
@@ -34,6 +37,7 @@ public class DisplayReceiver : MonoBehaviour
 		{
 			Debug.Log("Polling for new surface texture update");
 			UnityPlayerActivityWithMediaProjection.Call("requestSurfaceTextureUpdate");
+			GL.InvalidateState();
 		}
 		else {
 			Debug.Log("Initializing surface and requesting screen capture from Unity");
