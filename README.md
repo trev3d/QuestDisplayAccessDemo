@@ -9,11 +9,11 @@ Developers want camera access on the Meta Quest. Meta hasn't let us have it yet.
 
 ### To fix 
 
-⚠️ The app only creates a single MediaProjector session on app launch. If the app is interrupted (such as by the headset going to sleep) the session will end and you'll need to restart the app. 
-
 ⚠️ The code for copying the texture to Unity is a horribly slow CPU byte array copy. I'm trying to fix this in the '[gltexture](https://github.com/trev3d/QuestDisplayAccessDemo/tree/gltexture)' branch
 
 ⚠️ The incoming texture is flipped vertically. 
+
+⚠️ This demo project only creates a single MediaProjector session on app launch. If the app is interrupted (such as by the headset going to sleep) the session will end and you'll need to restart the app. 
 
 ### Gotchas
 
