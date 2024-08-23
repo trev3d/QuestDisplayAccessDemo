@@ -1034,13 +1034,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1316303724}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.21758415, y: 0.12701711, z: -0.967394, w: -0.025936421}
+  m_LocalRotation: {x: 0.12701705, y: 0.21758424, z: -0.025936918, w: 0.967394}
   m_LocalPosition: {x: 1.4949999, y: 1.11, z: 1.5249999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1329323966}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 14.894, y: 25.391, z: -179.698}
+  m_LocalEulerAnglesHint: {x: 14.894, y: 25.391, z: 0.302}
 --- !u!1 &1329323963
 GameObject:
   m_ObjectHideFlags: 0
@@ -1117,12 +1118,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1329323963}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.1270171, y: 0.21758415, z: -0.025936406, w: 0.96739393}
-  m_LocalPosition: {x: 1.5202683, y: 1.094639, z: 1.5778375}
-  m_LocalScale: {x: 1.1503001, y: 1.1503003, z: 1.1503003}
+  m_LocalRotation: {x: -0.000000059604645, y: -0.000000014901161, z: 0.00000051409006, w: 1}
+  m_LocalPosition: {x: 0.00017198361, y: 0.0002084868, z: 0.060549125}
+  m_LocalScale: {x: 1.1503001, y: 1.1503003, z: 1.1503004}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1316303729}
   m_LocalEulerAnglesHint: {x: 14.894, y: 25.391, z: 0.302}
 --- !u!1 &1374487427
 GameObject:
@@ -1256,6 +1257,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e893c7fc158979a4393b70eacd8e4b77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  imageBytes: []
+  meshRenderer: {fileID: 0}
+  texture: {fileID: 0}
 --- !u!23 &1716445985
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1549,15 +1553,111 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!1 &2102598650
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2102598651}
+  - component: {fileID: 2102598652}
+  m_Layer: 0
+  m_Name: Screen Capture Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2102598651
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2102598650}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2102598652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2102598650}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43f60f6cd21f71145a84a766991fb789, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startScreenCaptureOnStart: 1
+  OnTextureInitialized:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2100000, guid: 57902db896fc75844bdf2f0da9a10755, type: 2}
+        m_TargetAssemblyTypeName: UnityEngine.Material, UnityEngine
+        m_MethodName: set_mainTexture
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  OnScreenCaptureStarted:
+    m_PersistentCalls:
+      m_Calls: []
+  OnScreenCapturePermissionDeclined:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2102598652}
+        m_TargetAssemblyTypeName: ScreenCaptureTextureManager, Assembly-CSharp
+        m_MethodName: StartScreenCapture
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  OnScreenCaptureStopped:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2102598652}
+        m_TargetAssemblyTypeName: ScreenCaptureTextureManager, Assembly-CSharp
+        m_MethodName: StartScreenCapture
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  OnNewFrame:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 2102598651}
   - {fileID: 179522249}
   - {fileID: 782628378}
   - {fileID: 1216234218}
   - {fileID: 1316303729}
-  - {fileID: 1329323966}
   - {fileID: 1716445987}
   - {fileID: 1732392207}
   - {fileID: 1242370925}
