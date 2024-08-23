@@ -58,6 +58,8 @@ public class UnityPlayerActivityWithMediaProjector extends UnityPlayerActivity {
 
 		reader.setOnImageAvailableListener(imageReader -> {
 
+			SendUnityMessage("NewFrameIncoming");
+
 			Image image = imageReader.acquireLatestImage();
 
 			ByteBuffer buffer = image.getPlanes()[0].getBuffer();
