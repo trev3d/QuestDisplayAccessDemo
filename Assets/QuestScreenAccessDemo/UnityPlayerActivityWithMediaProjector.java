@@ -39,10 +39,14 @@ public class UnityPlayerActivityWithMediaProjector extends UnityPlayerActivity i
 	private int width;
 	private int height;
 
+	final int target = GLES30.GL_TEXTURE_2D;
+
 	private static EGLContext unityContext = EGL14.EGL_NO_CONTEXT;
 	private static EGLDisplay unityDisplay = EGL14.EGL_NO_DISPLAY;
 	private static EGLSurface unityDrawSurface = EGL14.EGL_NO_SURFACE;
 	private static EGLSurface unityReadSurface = EGL14.EGL_NO_SURFACE;
+
+	private int textureId;
 
 	// https://medium.com/xrpractices/external-texture-rendering-with-unity-and-android-b844bb7a35da
 
@@ -53,6 +57,7 @@ public class UnityPlayerActivityWithMediaProjector extends UnityPlayerActivity i
 			return;
 		}
 
+		this.textureId = textureId;
 		this.width = width;
 		this.height = height;
 
@@ -70,11 +75,12 @@ public class UnityPlayerActivityWithMediaProjector extends UnityPlayerActivity i
 		EGL14.eglMakeCurrent(unityDisplay, unityDrawSurface, unityReadSurface, unityContext);
 
 		GLES30.glActiveTexture(GLES30.GL_TEXTURE0);
-		GLES30.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId);
-		GLES30.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR);
-		GLES30.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR);
-		GLES30.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE);
-		GLES30.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE);
+
+		GLES30.glBindTexture(target, textureId);
+		GLES30.glTexParameterf(target, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR);
+		GLES30.glTexParameterf(target, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR);
+		GLES30.glTexParameterf(target, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE);
+		GLES30.glTexParameterf(target, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE);
 
 		surfaceTexture = new SurfaceTexture(textureId);
 		surfaceTexture.setDefaultBufferSize(width, height);
@@ -142,12 +148,15 @@ public class UnityPlayerActivityWithMediaProjector extends UnityPlayerActivity i
 		}
 
 		Log.i(TAG, "Updating texture image");
+
+
 		surfaceTexture.updateTexImage();
 		newFrameAvailable = false;
 	}
 
 	@Override
 	public void onFrameAvailable(SurfaceTexture surfaceTexture) {
+		surfaceTexture.updateTexImage();
 		newFrameAvailable = true;
 	}
 }

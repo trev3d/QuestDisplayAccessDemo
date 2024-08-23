@@ -37,7 +37,6 @@ public class DisplayReceiver : MonoBehaviour
 		{
 			Debug.Log("Polling for new surface texture update");
 			UnityPlayerActivityWithMediaProjection.Call("requestSurfaceTextureUpdate");
-			GL.InvalidateState();
 		}
 		else {
 			Debug.Log("Initializing surface and requesting screen capture from Unity");
