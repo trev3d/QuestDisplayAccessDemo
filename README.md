@@ -2,6 +2,9 @@
 
 Developers want camera access on the Meta Quest. Meta hasn't let us have it yet. The next best thing is display access. Thanks to Android's MediaProjector API, you can copy the display image to a texture in your Unity project with minimal latency as demonstrated in this horribly architected Unity project. **No PC or embedded browser required!**
 
+⚠️ You may need to be on Quest system software v68 or higher 
+
+
 ## ⚠️ Issues (please read)!
 
 ### To fix 
