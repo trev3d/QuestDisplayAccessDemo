@@ -149,14 +149,12 @@ public class UnityPlayerActivityWithMediaProjector extends UnityPlayerActivity i
 
 		Log.i(TAG, "Updating texture image");
 
-
 		surfaceTexture.updateTexImage();
 		newFrameAvailable = false;
 	}
 
 	@Override
 	public void onFrameAvailable(SurfaceTexture surfaceTexture) {
-		surfaceTexture.updateTexImage();
 		newFrameAvailable = true;
 	}
 }
