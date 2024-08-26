@@ -31,8 +31,8 @@ public class UnityPlayerActivityWithMediaProjector extends UnityPlayerActivity {
 	private MediaProjection projection;
 	private VirtualDisplay virtualDisplay;
 	private Intent notifServiceIntent;
-
-	public byte[] lastFrameBytes = null;
+	
+	private ByteBuffer lastFrameBytesBuffer;
 
 	private String gameObjectName;
 	private int width;
@@ -53,24 +53,34 @@ public class UnityPlayerActivityWithMediaProjector extends UnityPlayerActivity {
 		this.gameObjectName = gameObjectName;
 		this.width = width;
 		this.height = height;
+		
+		// Calculate the exact buffer size required (4 bytes per pixel for RGBA_8888)
+       int bufferSize = width * height * 4;
+   
+       // Allocate a direct ByteBuffer for better performance
+       lastFrameBytesBuffer = ByteBuffer.allocateDirect(bufferSize);
 
 		reader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2);
 
 		reader.setOnImageAvailableListener(imageReader -> {
-
-			SendUnityMessage("NewFrameIncoming");
-
-			Image image = imageReader.acquireLatestImage();
-
-			ByteBuffer buffer = image.getPlanes()[0].getBuffer();
-			lastFrameBytes = new byte[buffer.remaining()];
-			buffer.get(lastFrameBytes);
-
-			image.close();
-
-			SendUnityMessage("NewFrameAvailable");
-
-		}, new Handler(Looper.getMainLooper()));
+   
+           SendUnityMessage("NewFrameIncoming");
+   
+           Image image = imageReader.acquireLatestImage();
+   
+           if (image != null) {
+               ByteBuffer buffer = image.getPlanes()[0].getBuffer();   
+              
+               // Clear the buffer for new data by resetting the position of the buffer to zero
+               lastFrameBytesBuffer.clear(); 
+               lastFrameBytesBuffer.put(buffer);
+   
+               image.close();
+   
+               SendUnityMessage("NewFrameAvailable");
+           }
+   
+       }, new Handler(Looper.getMainLooper()));
 
 		Log.i(TAG, "Asking for screen capture permission...");
 
@@ -149,6 +159,7 @@ public class UnityPlayerActivityWithMediaProjector extends UnityPlayerActivity {
 
 		SendUnityMessage("ScreenCaptureStopped");
 	}
-
-
+	
+    public ByteBuffer getLastFrameBytesBuffer() {
+        return lastFrameBytesBuffer;}
 }
