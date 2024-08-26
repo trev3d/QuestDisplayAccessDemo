@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -12,6 +13,9 @@ public class ScreenCaptureTextureManager : MonoBehaviour
 		Both = 3,
 	}
 
+	private AndroidJavaObject byteBuffer;
+	private unsafe sbyte* imageData;
+	private int bufferSize;
 	public static ScreenCaptureTextureManager Instance { get; private set; }
 
 	private AndroidJavaClass UnityPlayer;
@@ -53,8 +57,17 @@ public class ScreenCaptureTextureManager : MonoBehaviour
 		{
 			StartScreenCapture();
 		}
+		bufferSize = Size.x * Size.y * 4; // RGBA_8888 format: 4 bytes per pixel
 	}
 
+	private unsafe void InitializeByteBufferRetrieved()
+	{
+		// Retrieve the ByteBuffer from Java and cache it
+		byteBuffer = UnityPlayerActivityWithMediaProjector.Call<AndroidJavaObject>("getLastFrameBytesBuffer");
+
+		// Get the memory address of the direct ByteBuffer
+		imageData = AndroidJNI.GetDirectBufferAddress(byteBuffer.GetRawObject());
+	}
 	private byte[] GetLastFrameBytes()
 	{
 		return UnityPlayerActivityWithMediaProjector.Get<byte[]>("lastFrameBytes");
@@ -77,6 +90,7 @@ public class ScreenCaptureTextureManager : MonoBehaviour
 	private void ScreenCaptureStarted()
 	{
 		OnScreenCaptureStarted.Invoke();
+		InitializeByteBufferRetrieved();
 	}
 
 	private void ScreenCapturePermissionDeclined()
@@ -89,13 +103,10 @@ public class ScreenCaptureTextureManager : MonoBehaviour
 		OnNewFrameIncoming.Invoke();
 	}
 
-	private void NewFrameAvailable()
+	private unsafe void NewFrameAvailable()
 	{
-		byte[] frameBytes = GetLastFrameBytes();
-
-		if (frameBytes == null || frameBytes.Length == 0) return;
-
-		screenTexture.LoadRawTextureData(frameBytes);
+		if (imageData == default) return;
+		screenTexture.LoadRawTextureData((IntPtr)imageData, bufferSize);
 		screenTexture.Apply();
 
 		switch(flipMethod)
