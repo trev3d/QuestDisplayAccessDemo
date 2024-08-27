@@ -1,8 +1,9 @@
+using System;
 using UnityEngine;
 using UnityEngine.Events;
 
 [DefaultExecutionOrder(-1000)]
-public class ScreenCaptureTextureManager : MonoBehaviour
+public class QuestScreenCaptureTextureManager : MonoBehaviour
 {
 	public enum FlipMethod
 	{
@@ -12,14 +13,17 @@ public class ScreenCaptureTextureManager : MonoBehaviour
 		Both = 3,
 	}
 
-	public static ScreenCaptureTextureManager Instance { get; private set; }
+	private AndroidJavaObject byteBuffer;
+	private unsafe sbyte* imageData;
+	private int bufferSize;
+	public static QuestScreenCaptureTextureManager Instance { get; private set; }
 
 	private AndroidJavaClass UnityPlayer;
 	private AndroidJavaObject UnityPlayerActivityWithMediaProjector;
 
 	private Texture2D screenTexture;
 	private RenderTexture flipTexture;
-	public static Texture2D ScreenCaptureTexture => Instance.screenTexture;
+	public Texture2D ScreenCaptureTexture => screenTexture;
 
 	public bool startScreenCaptureOnStart = true;
 	public FlipMethod flipMethod = FlipMethod.GPUOnly;
@@ -36,6 +40,7 @@ public class ScreenCaptureTextureManager : MonoBehaviour
 	private void Awake()
 	{
 		Instance = this;
+		screenTexture = new Texture2D(Size.x, Size.y, TextureFormat.RGBA32, 1, false);
 	}
 
 	private void Start()
@@ -43,7 +48,7 @@ public class ScreenCaptureTextureManager : MonoBehaviour
 		UnityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
 		UnityPlayerActivityWithMediaProjector = UnityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
 
-		screenTexture = new Texture2D(Size.x, Size.y, TextureFormat.RGBA32, 1, false);
+		
 		flipTexture = new RenderTexture(Size.x, Size.y, 1, RenderTextureFormat.ARGB32, 1);
 		flipTexture.Create();
 
@@ -53,14 +58,17 @@ public class ScreenCaptureTextureManager : MonoBehaviour
 		{
 			StartScreenCapture();
 		}
+		bufferSize = Size.x * Size.y * 4; // RGBA_8888 format: 4 bytes per pixel
 	}
 
-	private byte[] GetLastFrameBytes()
+	private unsafe void InitializeByteBufferRetrieved()
 	{
-		return UnityPlayerActivityWithMediaProjector.Get<byte[]>("lastFrameBytes");
+		// Retrieve the ByteBuffer from Java and cache it
+		byteBuffer = UnityPlayerActivityWithMediaProjector.Call<AndroidJavaObject>("getLastFrameBytesBuffer");
+
+		// Get the memory address of the direct ByteBuffer
+		imageData = AndroidJNI.GetDirectBufferAddress(byteBuffer.GetRawObject());
 	}
-
-
 
 	public void StartScreenCapture()
 	{
@@ -77,6 +85,7 @@ public class ScreenCaptureTextureManager : MonoBehaviour
 	private void ScreenCaptureStarted()
 	{
 		OnScreenCaptureStarted.Invoke();
+		InitializeByteBufferRetrieved();
 	}
 
 	private void ScreenCapturePermissionDeclined()
@@ -89,13 +98,10 @@ public class ScreenCaptureTextureManager : MonoBehaviour
 		OnNewFrameIncoming.Invoke();
 	}
 
-	private void NewFrameAvailable()
+	private unsafe void NewFrameAvailable()
 	{
-		byte[] frameBytes = GetLastFrameBytes();
-
-		if (frameBytes == null || frameBytes.Length == 0) return;
-
-		screenTexture.LoadRawTextureData(frameBytes);
+		if (imageData == default) return;
+		screenTexture.LoadRawTextureData((IntPtr)imageData, bufferSize);
 		screenTexture.Apply();
 
 		switch(flipMethod)
@@ -120,9 +126,6 @@ public class ScreenCaptureTextureManager : MonoBehaviour
 				FlipImageCPU(screenTexture);
 				break;
 		}
-
-		RenderTexture previousylActive = RenderTexture.active;
-		
 
 		OnNewFrame.Invoke();
 	}

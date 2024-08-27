@@ -502,7 +502,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 57902db896fc75844bdf2f0da9a10755, type: 2}
+  - {fileID: 2100000, guid: 22b753cbffdecec46b7e5f6ce7430577, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -915,6 +915,7 @@ GameObject:
   - component: {fileID: 948905722}
   - component: {fileID: 948905721}
   - component: {fileID: 948905723}
+  - component: {fileID: 948905724}
   m_Layer: 0
   m_Name: Screen Capture Texture Manager
   m_TagString: Untagged
@@ -939,7 +940,7 @@ MonoBehaviour:
   OnTextureInitialized:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2100000, guid: 57902db896fc75844bdf2f0da9a10755, type: 2}
+      - m_Target: {fileID: 2100000, guid: 22b753cbffdecec46b7e5f6ce7430577, type: 2}
         m_TargetAssemblyTypeName: UnityEngine.Material, UnityEngine
         m_MethodName: set_mainTexture
         m_Mode: 0
@@ -993,13 +994,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3974b9aa56bda954c903adb0b1b1a236, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  aprilTagIndicatorPrefab: {fileID: 6482966194101274029, guid: 463c55b2c06366245b864db15727c905, type: 3}
-  numTagsToSpawn: 1
+  screenCaptureTextureManager: {fileID: 948905721}
+  physicalCamRepresentation: {fileID: 833687421}
   horizontalFovDeg: 80
   tagSizeMeters: 0.12
   decimation: 4
-  headTransform: {fileID: 833687421}
-  texture: {fileID: 0}
+--- !u!114 &948905724
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 948905720}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9bf18ec5f4a6d04591171320480e3c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  aprilTagTracker: {fileID: 948905723}
+  aprilTagIndicatorPrefab: {fileID: 6482966194101274029, guid: 463c55b2c06366245b864db15727c905, type: 3}
 --- !u!1 &1043044213
 GameObject:
   m_ObjectHideFlags: 0
