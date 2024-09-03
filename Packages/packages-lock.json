@@ -1,10 +1,30 @@
 {
   "dependencies": {
     "com.meta.xr.sdk.core": {
-      "version": "67.0.0",
-      "depth": 0,
+      "version": "68.0.2",
+      "depth": 1,
       "source": "registry",
       "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.meta.xr.sdk.interaction": {
+      "version": "68.0.1",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.ugui": "1.0.0",
+        "com.unity.textmeshpro": "3.0.6"
+      },
+      "url": "https://packages.unity.com"
+    },
+    "com.meta.xr.sdk.interaction.ovr": {
+      "version": "68.0.1",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.meta.xr.sdk.core": "68.0.2",
+        "com.meta.xr.sdk.interaction": "68.0.1"
+      },
       "url": "https://packages.unity.com"
     },
     "com.unity.burst": {
@@ -198,13 +218,12 @@
       "url": "https://packages.unity.com"
     },
     "jp.keijiro.apriltag": {
-      "version": "1.0.2",
+      "version": "file:jp.keijiro.apriltag@1.0.2",
       "depth": 0,
-      "source": "registry",
+      "source": "embedded",
       "dependencies": {
         "com.unity.burst": "1.6.5"
-      },
-      "url": "https://registry.npmjs.com"
+      }
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",

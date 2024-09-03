@@ -5,13 +5,6 @@ using UnityEngine.Events;
 [DefaultExecutionOrder(-1000)]
 public class QuestScreenCaptureTextureManager : MonoBehaviour
 {
-	public enum FlipMethod
-	{
-		DontFlip = 0,
-		GPUOnly = 1,
-		CPUOnly = 2,
-		Both = 3,
-	}
 
 	private AndroidJavaObject byteBuffer;
 	private unsafe sbyte* imageData;
@@ -26,7 +19,7 @@ public class QuestScreenCaptureTextureManager : MonoBehaviour
 	public Texture2D ScreenCaptureTexture => screenTexture;
 
 	public bool startScreenCaptureOnStart = true;
-	public FlipMethod flipMethod = FlipMethod.GPUOnly;
+	public bool flipTextureOnGPU = false;
 
 	public UnityEvent<Texture2D> OnTextureInitialized = new();
 	public UnityEvent OnScreenCaptureStarted = new();
@@ -104,27 +97,10 @@ public class QuestScreenCaptureTextureManager : MonoBehaviour
 		screenTexture.LoadRawTextureData((IntPtr)imageData, bufferSize);
 		screenTexture.Apply();
 
-		switch(flipMethod)
+		if(flipTextureOnGPU)
 		{
-			case FlipMethod.DontFlip:
-				break;
-
-			case FlipMethod.GPUOnly:
-				Graphics.Blit(screenTexture, flipTexture, new Vector2(1, -1), Vector2.zero);
-				Graphics.CopyTexture(flipTexture, screenTexture);
-				break;
-
-			case FlipMethod.CPUOnly:
-				FlipImageCPU(screenTexture);
-				break;
-
-			case FlipMethod.Both:
-
-				Graphics.Blit(screenTexture, flipTexture, new Vector2(1, -1), Vector2.zero);
-				Graphics.CopyTexture(flipTexture, screenTexture);
-
-				FlipImageCPU(screenTexture);
-				break;
+			Graphics.Blit(screenTexture, flipTexture, new Vector2(1, -1), Vector2.zero);
+			Graphics.CopyTexture(flipTexture, screenTexture);
 		}
 
 		OnNewFrame.Invoke();
@@ -133,30 +109,5 @@ public class QuestScreenCaptureTextureManager : MonoBehaviour
 	private void ScreenCaptureStopped()
 	{
 		OnScreenCaptureStopped.Invoke();
-	}
-
-	//https://gamedev.stackexchange.com/questions/203539/rotating-a-unity-texture2d-90-180-degrees-without-using-getpixels32-or-setpixels
-	private static void FlipImageCPU(Texture2D tex)
-	{
-		int width = tex.width;
-		int height = tex.height;
-
-		var texels = tex.GetRawTextureData<Color32>();
-		var copy = System.Buffers.ArrayPool<Color32>.Shared.Rent(texels.Length);
-		Unity.Collections.NativeArray<Color32>.Copy(texels, copy, texels.Length);
-
-		int address = 0;
-		for (int newY = 0; newY < height; newY++)
-		{
-			for (int newX = 0; newX < width; newX++)
-			{
-				int oldX = newX;
-				int oldY = height - newY - 1;
-
-				texels[address++] = copy[oldY * width + oldX];
-			}
-		}
-
-		System.Buffers.ArrayPool<Color32>.Shared.Return(copy);
 	}
 }

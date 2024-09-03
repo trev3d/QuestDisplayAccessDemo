@@ -2,7 +2,9 @@ using UnityEngine;
 using AprilTag;
 using System;
 using System.Collections.Generic;
+using UnityEngine.XR;
 
+[DefaultExecutionOrder(-1000)]
 public class QuestAprilTagTracker : MonoBehaviour
 {
 	private TagDetector detector;
@@ -19,14 +21,22 @@ public class QuestAprilTagTracker : MonoBehaviour
 
 	[NonSerialized] public Texture2D texture;
 
-	private Matrix4x4 headPoseAtPrevFrame;
-	private Matrix4x4 headPoseAtLatestFrame;
+	private Matrix4x4 headPoseWhenLastFrameIncoming;
+	private Matrix4x4 headPoseWhenNewFrameIncoming;
+
+	public bool detectionEnabled = true;
+	public void SetDetectionEnabled(bool b) => detectionEnabled = b;
 
 	private List<TagPose> worldPoses = new(10);
 	public event Action<IEnumerable<TagPose>> OnDetectTags = delegate { };
 
+	private List<XRNodeState> nodeStates = new();
+
 	void Start()
 	{
+		if (screenCaptureTextureManager.ScreenCaptureTexture != null)
+			texture = screenCaptureTextureManager.ScreenCaptureTexture;
+
 		detector = new TagDetector(1024, 1024, decimation);
 
 		if(physicalCamRepresentation == null)
@@ -35,7 +45,9 @@ public class QuestAprilTagTracker : MonoBehaviour
 
 	private void OnEnable()
 	{
-		texture = screenCaptureTextureManager.ScreenCaptureTexture;
+		if(screenCaptureTextureManager.ScreenCaptureTexture != null)
+			texture = screenCaptureTextureManager.ScreenCaptureTexture;
+
 		screenCaptureTextureManager.OnNewFrameIncoming.AddListener(CacheHeadPose);
 		screenCaptureTextureManager.OnNewFrame.AddListener(OnReceivedNewFrame);
 	}
@@ -50,8 +62,24 @@ public class QuestAprilTagTracker : MonoBehaviour
 
 	private void CacheHeadPose()
 	{
-		headPoseAtPrevFrame = headPoseAtLatestFrame;
-		headPoseAtLatestFrame = physicalCamRepresentation.localToWorldMatrix;
+		headPoseWhenLastFrameIncoming = headPoseWhenNewFrameIncoming;
+
+		InputTracking.GetNodeStates(nodeStates);
+
+		Vector3 pos = Vector3.zero;
+		Quaternion rot = Quaternion.identity;
+
+		for (int i = 0; i < nodeStates.Count; i++) {
+			XRNodeState state = nodeStates[i];
+			if(state.nodeType == XRNode.LeftEye)
+			{
+				state.TryGetPosition(out pos);
+				state.TryGetRotation(out rot);
+				break;
+			}
+		}
+
+		headPoseWhenNewFrameIncoming = Matrix4x4.TRS(pos, rot, Vector3.one);
 	}
 
 	// called on another thread so we do this
@@ -63,7 +91,7 @@ public class QuestAprilTagTracker : MonoBehaviour
 
 	private void Update()
 	{
-		if (!newFrameAvailable || headPoseAtPrevFrame == default) return;
+		if (!detectionEnabled || !newFrameAvailable || headPoseWhenLastFrameIncoming == default) return;
 
 		detector.ProcessImage(texture.GetPixels32(), horizontalFovDeg * Mathf.Deg2Rad, tagSizeMeters);
 
@@ -72,16 +100,16 @@ public class QuestAprilTagTracker : MonoBehaviour
 		{
 			TagPose worldPose = new(
 				pose.ID,
-				headPoseAtPrevFrame.MultiplyPoint(pose.Position),
-				headPoseAtPrevFrame.rotation * pose.Rotation * Quaternion.Euler(-90, 0, 0)
+				headPoseWhenLastFrameIncoming.MultiplyPoint(pose.Position),
+				headPoseWhenLastFrameIncoming.rotation * pose.Rotation * Quaternion.Euler(-90, 0, 0)
 				);
 
 			worldPoses.Add(worldPose);
 		}
 
-		OnDetectTags.Invoke(worldPoses);
-
-		headPoseAtPrevFrame = default;
 		newFrameAvailable = false;
+		headPoseWhenLastFrameIncoming = default;
+
+		OnDetectTags.Invoke(worldPoses);
 	}
 }

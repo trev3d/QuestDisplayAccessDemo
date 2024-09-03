@@ -1,6 +1,8 @@
 {
   "dependencies": {
     "com.meta.xr.sdk.core": "67.0.0",
+    "com.meta.xr.sdk.interaction": "68.0.1",
+    "com.meta.xr.sdk.interaction.ovr": "68.0.1",
     "com.unity.collab-proxy": "2.4.4",
     "com.unity.feature.development": "1.0.1",
     "com.unity.mobile.android-logcat": "1.4.2",
