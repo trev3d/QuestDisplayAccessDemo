@@ -12,8 +12,8 @@ namespace Trev3d.Quest.ScreenCapture
 		private int bufferSize;
 		public static QuestScreenCaptureTextureManager Instance { get; private set; }
 
-		private AndroidJavaClass UnityPlayer;
-		private AndroidJavaObject UnityPlayerActivityWithMediaProjector;
+		private AndroidJavaClass UnityMediaProjection;
+		private AndroidJavaObject UnityMediaProjectionInstance;
 
 		private Texture2D screenTexture;
 		private RenderTexture flipTexture;
@@ -39,8 +39,9 @@ namespace Trev3d.Quest.ScreenCapture
 
 		private void Start()
 		{
-			UnityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-			UnityPlayerActivityWithMediaProjector = UnityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+			UnityMediaProjection = new AndroidJavaClass("com.trev3d.UnityMediaProjection");
+			UnityMediaProjectionInstance = UnityMediaProjection.CallStatic<AndroidJavaObject>("getInstance");
+			UnityMediaProjectionInstance.Call("initialize", gameObject.name, Size.x, Size.y);
 
 
 			flipTexture = new RenderTexture(Size.x, Size.y, 1, RenderTextureFormat.ARGB32, 1);
@@ -58,7 +59,7 @@ namespace Trev3d.Quest.ScreenCapture
 		private unsafe void InitializeByteBufferRetrieved()
 		{
 			// Retrieve the ByteBuffer from Java and cache it
-			byteBuffer = UnityPlayerActivityWithMediaProjector.Call<AndroidJavaObject>("getLastFrameBytesBuffer");
+			byteBuffer = UnityMediaProjectionInstance.Call<AndroidJavaObject>("getLastFrameBytesBuffer");
 
 			// Get the memory address of the direct ByteBuffer
 			imageData = AndroidJNI.GetDirectBufferAddress(byteBuffer.GetRawObject());
@@ -66,12 +67,12 @@ namespace Trev3d.Quest.ScreenCapture
 
 		public void StartScreenCapture()
 		{
-			UnityPlayerActivityWithMediaProjector.Call("startScreenCaptureWithPermission", gameObject.name, Size.x, Size.y);
+			UnityMediaProjectionInstance.Call("requestScreenCapture");
 		}
 
 		public void StopScreenCapture()
 		{
-			UnityPlayerActivityWithMediaProjector.Call("stopScreenCapture");
+			UnityMediaProjectionInstance.Call("stopScreenCapture");
 		}
 
 		// Messages sent from android activity

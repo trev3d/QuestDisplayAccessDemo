@@ -23,7 +23,13 @@
 		<meta-data android:name="notch.config" android:value="portrait|landscape" />
 		<meta-data android:name="unity.auto-report-fully-drawn" android:value="true" />
 
-		<activity android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenLayout|screenSize|uiMode|density" android:launchMode="singleTask" android:name="com.trev3d.UnityPlayerActivityWithMediaProjector" android:excludeFromRecents="true" android:exported="true" android:screenOrientation="landscape" android:resizeableActivity="false" android:hardwareAccelerated="false">
+		<service android:exported="false" android:foregroundServiceType="mediaProjection" android:name="com.trev3d.UnityMediaProjectionNotificationService" />
+
+		<activity
+			android:name="com.trev3d.UnityMediaProjectionRequestActivity"
+			android:exported="false" />
+
+		<activity android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenLayout|screenSize|uiMode|density" android:excludeFromRecents="true" android:exported="true" android:hardwareAccelerated="false" android:launchMode="singleTask" android:name="com.unity3d.player.UnityPlayerGameActivity" android:resizeableActivity="false" android:screenOrientation="landscape" android:theme="@style/BaseUnityGameActivityTheme">
 			<intent-filter>
 				<category android:name="android.intent.category.LAUNCHER" />
 				<category android:name="com.oculus.intent.category.VR" />
@@ -31,12 +37,9 @@
 			</intent-filter>
 			<meta-data android:name="com.oculus.vr.focusaware" android:value="true" />
 			<meta-data android:name="notch_support" android:value="true" />
+			<meta-data android:name="notch_support" android:value="true" />
 		</activity>
-		<service
-			android:name="com.trev3d.RecordNotificationService"
-			android:foregroundServiceType="mediaProjection"
-			android:exported="false">
-		</service>
+		
 		<meta-data android:name="com.unity.xr.oculus.LowOverheadMode" android:value="false" />
 		<meta-data android:name="com.unity.xr.oculus.LateLatching" android:value="false" />
 		<meta-data android:name="com.unity.xr.oculus.LateLatchingDebug" android:value="false" />
