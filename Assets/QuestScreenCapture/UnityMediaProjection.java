@@ -74,10 +74,15 @@ public class UnityMediaProjection {
 			Image image = imageReader.acquireLatestImage();
 
 			if (image != null) {
-				for(int i = 0; i < receivers.size(); i++)
-					receivers.get(i).onNewImage(image);
 
 				ByteBuffer buffer = image.getPlanes()[0].getBuffer();
+
+				for(int i = 0; i < receivers.size(); i++) {
+					buffer.rewind();
+					receivers.get(i).onNewImage(image);
+				}
+
+				buffer.rewind();
 
 				// Clear the buffer for new data by resetting the position of the buffer to zero
 				lastFrameBytesBuffer.clear();
