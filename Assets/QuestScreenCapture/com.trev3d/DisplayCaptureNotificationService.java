@@ -17,10 +17,7 @@ import android.util.Log;
 import com.unity3d.player.UnityPlayerForGameActivity;
 
 
-public class UnityMediaProjectionNotificationService extends Service {
-
-	private static final int REQUEST_MEDIA_PROJECTION = 1;
-	static final String KEY_DATA = "SCREEN_CAPTURE_INTENT";
+public class DisplayCaptureNotificationService extends Service {
 
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -31,17 +28,27 @@ public class UnityMediaProjectionNotificationService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Log.i(TAG, "Service onStartCommand() is called");
 
-		Intent activityIntent = new Intent(this, UnityPlayerForGameActivity.class);
+		Intent activityIntent = new Intent(
+				this,
+				UnityPlayerForGameActivity.class);
 		activityIntent.setAction("stop");
-		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, activityIntent, FLAG_IMMUTABLE);
+		PendingIntent contentIntent = PendingIntent.getActivity(
+				this,
+				0,
+				activityIntent,
+				FLAG_IMMUTABLE);
 
 		String channelId = "001";
 		String channelName = "myChannel";
-		NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_NONE);
+		NotificationChannel channel = new NotificationChannel(
+				channelId,
+				channelName,
+				NotificationManager.IMPORTANCE_NONE);
 		channel.setLightColor(Color.BLUE);
 		channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
 
-		NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		NotificationManager manager =
+				(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
 		if (manager != null) {
 			manager.createNotificationChannel(channel);
@@ -52,7 +59,9 @@ public class UnityMediaProjectionNotificationService extends Service {
 					.setContentTitle("Stop")
 					.setContentIntent(contentIntent)
 					.build();
-			startForeground(5, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION);
+			startForeground(5,
+					notification,
+					ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION);
 		}
 
 		return android.app.Service.START_REDELIVER_INTENT;

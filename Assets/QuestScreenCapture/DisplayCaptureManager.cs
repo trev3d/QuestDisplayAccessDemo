@@ -2,18 +2,39 @@ using System;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Trev3d.Quest.ScreenCapture
+namespace Anaglyph.DisplayCapture
 {
 	[DefaultExecutionOrder(-1000)]
-	public class QuestScreenCaptureTextureManager : MonoBehaviour
+	public class DisplayCaptureManager : MonoBehaviour
 	{
-		private AndroidJavaObject byteBuffer;
 		private unsafe sbyte* imageData;
 		private int bufferSize;
-		public static QuestScreenCaptureTextureManager Instance { get; private set; }
 
-		private AndroidJavaClass UnityMediaProjection;
-		private AndroidJavaObject UnityMediaProjectionInstance;
+		private class AndroidInterface
+		{
+			private AndroidJavaClass androidClass;
+			private AndroidJavaObject androidInstance;
+
+			public AndroidInterface(GameObject messageReceiver, int textureWidth, int textureHeight)
+			{
+				androidClass = new AndroidJavaClass("com.trev3d.DisplayCaptureManager");
+				androidInstance = androidClass.CallStatic<AndroidJavaObject>("getInstance");
+				androidInstance.Call("setup", messageReceiver.name, textureWidth, textureHeight);
+			}
+
+			public void RequestCapture() => androidInstance.Call("requestCapture");
+			public void StopCapture() => androidInstance.Call("stopCapture");
+
+			public unsafe sbyte* GetByteBuffer()
+			{
+				AndroidJavaObject byteBuffer = androidInstance.Call<AndroidJavaObject>("getByteBuffer");
+				return AndroidJNI.GetDirectBufferAddress(byteBuffer.GetRawObject());
+			}
+		}
+
+		private AndroidInterface androidInterface;
+
+		public static DisplayCaptureManager Instance { get; private set; }
 
 		private Texture2D screenTexture;
 		private RenderTexture flipTexture;
@@ -26,7 +47,6 @@ namespace Trev3d.Quest.ScreenCapture
 		public UnityEvent OnScreenCaptureStarted = new();
 		public UnityEvent OnScreenCapturePermissionDeclined = new();
 		public UnityEvent OnScreenCaptureStopped = new();
-		public UnityEvent OnNewFrameIncoming = new();
 		public UnityEvent OnNewFrame = new();
 
 		public static readonly Vector2Int Size = new(1024, 1024);
@@ -39,10 +59,7 @@ namespace Trev3d.Quest.ScreenCapture
 
 		private void Start()
 		{
-			UnityMediaProjection = new AndroidJavaClass("com.trev3d.UnityMediaProjection");
-			UnityMediaProjectionInstance = UnityMediaProjection.CallStatic<AndroidJavaObject>("getInstance");
-			UnityMediaProjectionInstance.Call("initialize", gameObject.name, Size.x, Size.y);
-
+			androidInterface = new AndroidInterface(gameObject, Size.x, Size.y);
 
 			flipTexture = new RenderTexture(Size.x, Size.y, 1, RenderTextureFormat.ARGB32, 1);
 			flipTexture.Create();
@@ -56,44 +73,31 @@ namespace Trev3d.Quest.ScreenCapture
 			bufferSize = Size.x * Size.y * 4; // RGBA_8888 format: 4 bytes per pixel
 		}
 
-		private unsafe void InitializeByteBufferRetrieved()
-		{
-			// Retrieve the ByteBuffer from Java and cache it
-			byteBuffer = UnityMediaProjectionInstance.Call<AndroidJavaObject>("getLastFrameBytesBuffer");
-
-			// Get the memory address of the direct ByteBuffer
-			imageData = AndroidJNI.GetDirectBufferAddress(byteBuffer.GetRawObject());
-		}
-
 		public void StartScreenCapture()
 		{
-			UnityMediaProjectionInstance.Call("requestScreenCapture");
+			androidInterface.RequestCapture();
 		}
 
 		public void StopScreenCapture()
 		{
-			UnityMediaProjectionInstance.Call("stopScreenCapture");
+			androidInterface.StopCapture();
 		}
 
-		// Messages sent from android activity
 
-		private void ScreenCaptureStarted()
+		// Messages sent from Android
+		
+		private unsafe void OnCaptureStarted()
 		{
 			OnScreenCaptureStarted.Invoke();
-			InitializeByteBufferRetrieved();
+			imageData = androidInterface.GetByteBuffer();
 		}
 
-		private void ScreenCapturePermissionDeclined()
+		private void OnPermissionDeclined()
 		{
 			OnScreenCapturePermissionDeclined.Invoke();
 		}
 
-		private void NewFrameIncoming()
-		{
-			OnNewFrameIncoming.Invoke();
-		}
-
-		private unsafe void NewFrameAvailable()
+		private unsafe void OnNewFrameAvailable()
 		{
 			if (imageData == default) return;
 			screenTexture.LoadRawTextureData((IntPtr)imageData, bufferSize);
@@ -108,7 +112,7 @@ namespace Trev3d.Quest.ScreenCapture
 			OnNewFrame.Invoke();
 		}
 
-		private void ScreenCaptureStopped()
+		private void OnCaptureStopped()
 		{
 			OnScreenCaptureStopped.Invoke();
 		}

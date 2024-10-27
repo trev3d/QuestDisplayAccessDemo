@@ -9,7 +9,7 @@ import android.media.projection.MediaProjectionManager;
 import android.os.Bundle;
 import android.util.Log;
 
-public class UnityMediaProjectionRequestActivity extends Activity {
+public class DisplayCaptureRequestActivity extends Activity {
 
 	private static final int REQUEST_MEDIA_PROJECTION = 1;
 
@@ -33,7 +33,7 @@ public class UnityMediaProjectionRequestActivity extends Activity {
 
 		Log.i(TAG, "Got screen capture permission!");
 
-		com.trev3d.UnityMediaProjection.getInstance().onGetScreenCapturePermission(resultCode, intent);
+		DisplayCaptureManager.getInstance().onGetScreenCapturePermission(resultCode, intent);
 
 		finish();
 	}

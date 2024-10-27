@@ -23,10 +23,10 @@
 		<meta-data android:name="notch.config" android:value="portrait|landscape" />
 		<meta-data android:name="unity.auto-report-fully-drawn" android:value="true" />
 
-		<service android:exported="false" android:foregroundServiceType="mediaProjection" android:name="com.trev3d.UnityMediaProjectionNotificationService" />
+		<service android:exported="false" android:foregroundServiceType="mediaProjection" android:name="com.trev3d.DisplayCaptureNotificationService" />
 
 		<activity
-			android:name="com.trev3d.UnityMediaProjectionRequestActivity"
+			android:name="com.trev3d.DisplayCaptureRequestActivity"
 			android:exported="false" />
 
 		<activity android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenLayout|screenSize|uiMode|density" android:excludeFromRecents="true" android:exported="true" android:hardwareAccelerated="false" android:launchMode="singleTask" android:name="com.unity3d.player.UnityPlayerGameActivity" android:resizeableActivity="false" android:screenOrientation="landscape" android:theme="@style/BaseUnityGameActivityTheme">

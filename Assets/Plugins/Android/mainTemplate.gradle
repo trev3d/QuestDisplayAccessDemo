@@ -5,7 +5,8 @@ apply from: '../shared/keepUnitySymbols.gradle'
 dependencies {
     
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.mlkit:barcode-scanning:17.3.0'  // Use this if you are using Google ML Kit for barcode scanning
+    implementation 'com.google.mlkit:barcode-scanning:17.3.0'
+    implementation 'com.google.code.gson:gson:2.11.0'
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 **DEPS**}
