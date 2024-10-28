@@ -61,7 +61,7 @@ rule CXX_SHARED_LIBRARY_LINKER__swappywrapper_Debug
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = "C:\Program Files\Unity\Hub\Editor\6000.0.24f1\Editor\Data\PlaybackEngines\AndroidPlayer\SDK\cmake\3.22.1\bin\cmake.exe" --regenerate-during-build -SC:\Users\jt\source\camaccess\Library\PramData\AndroidApplicationController\Cache\ph.anagly.mediaprojectiondemo\gradle-project\unityLibrary\src\main\cpp -BC:\Users\jt\source\camaccess\.utmp\Debug\333i292b\arm64-v8a
+  command = "C:\Program Files\Unity\Hub\Editor\6000.0.24f1\Editor\Data\PlaybackEngines\AndroidPlayer\SDK\cmake\3.22.1\bin\cmake.exe" --regenerate-during-build -SC:\Users\jt\source\camaccess\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp -BC:\Users\jt\source\camaccess\.utmp\Debug\333i292b\arm64-v8a
   description = Re-running CMake...
   generator = 1
 

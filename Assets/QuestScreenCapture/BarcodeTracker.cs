@@ -43,25 +43,27 @@ namespace Anaglyph.DisplayCapture
 				OVRPose headPose = headPoseState.Pose.ToOVRPose();
 				Matrix4x4 headTransform = Matrix4x4.TRS(headPose.position, headPose.orientation, Vector3.one);
 
-				Vector2[] screenPoints = new Vector2[4];
+				Vector3[] worldPoints = new Vector3[4];
 
 				for (int i = 0; i < 4; i++)
 				{
 					BarcodeReader.Point p = result.points[i];
 
 					Vector2Int size = DisplayCaptureManager.Instance.Size;
-					Vector3 toWorld = headTransform.MultiplyPoint(-Unproject(displayCaptureProjection, new Vector2(1f - p.x / (float)size.x, p.y / (float)size.y)));
-					toWorld = camera.transform.worldToLocalMatrix.MultiplyPoint(toWorld);
-					Vector2 uv = Project(camera.GetStereoProjectionMatrix(Camera.StereoscopicEye.Left), toWorld);
 
-					uv = new Vector2(1f - uv.x, 1f - uv.y);
-					screenPoints[i] = uv;
+					Vector2 uv = new Vector2(p.x / size.x, 1f - p.y / size.y);
+					Vector3 inWorld = Unproject(displayCaptureProjection, uv);
+					inWorld.z = -inWorld.z;
+					inWorld = headTransform.MultiplyPoint(inWorld);
+					worldPoints[i] = inWorld;
+
+					//indicators[i].position = toWorld;
 				}
 
-				DepthToWorld.Sample(screenPoints, out Vector3[] worldPoints);
+				DepthToWorld.SampleWorld(worldPoints, out Vector3[] worldPoints2);
 
 				for (int i = 0; i < 4; i++)
-					indicators[i].position = worldPoints[i];
+					indicators[i].position = worldPoints2[i];
 
 				break;
 			}
