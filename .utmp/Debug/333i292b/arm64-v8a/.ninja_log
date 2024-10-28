@@ -1,0 +1,12 @@
+# ninja log v5
+63	267	7517922020273117	FramePacing/CMakeFiles/swappywrapper.dir/UnitySwappyWrapper.cpp.o	eed18b06754f5f4b
+270	514	7517922022695913	C:/Users/jt/source/camaccess/Library/PramData/AndroidApplicationController/Cache/ph.anagly.mediaprojectiondemo/gradle-project/unityLibrary/build/intermediates/cxx/Debug/333i292b/obj/arm64-v8a/libswappywrapper.so	b72a67d246970b22
+27	1034	7517922027874778	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	f3066e61709ce58b
+35	1037	7517922027874778	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	2c97bf4c79c80d9a
+14	1039	7517922027874778	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	94d23044158d4df6
+53	1057	7517922028114774	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	1b1d444b298f97e
+43	1088	7517922028474763	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	b639f879676c3a43
+1	1095	7517922028559988	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	5652bf224aedd2c9
+8	1179	7517922029385122	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	27d1d2a50fa55d7a
+21	1225	7517922029842450	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	9fd6008b4a744554
+1225	1387	7517922031470704	C:/Users/jt/source/camaccess/Library/PramData/AndroidApplicationController/Cache/ph.anagly.mediaprojectiondemo/gradle-project/unityLibrary/build/intermediates/cxx/Debug/333i292b/obj/arm64-v8a/libgame.so	44bc03e9d8bb5e85

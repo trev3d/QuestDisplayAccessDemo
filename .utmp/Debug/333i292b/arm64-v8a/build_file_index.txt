@@ -1,0 +1,3 @@
+C:\Users\jt\source\camaccess\Library\PramData\AndroidApplicationController\Cache\ph.anagly.mediaprojectiondemo\gradle-project\unityLibrary\src\main\cpp\CMakeLists.txt
+C:\Users\jt\source\camaccess\Library\PramData\AndroidApplicationController\Cache\ph.anagly.mediaprojectiondemo\gradle-project\unityLibrary\src\main\cpp\FramePacing\CMakeLists.txt
+C:\Users\jt\source\camaccess\Library\PramData\AndroidApplicationController\Cache\ph.anagly.mediaprojectiondemo\gradle-project\unityLibrary\src\main\cpp\GameActivity\CMakeLists.txt

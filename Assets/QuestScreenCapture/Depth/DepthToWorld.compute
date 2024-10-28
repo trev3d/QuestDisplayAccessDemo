@@ -3,8 +3,8 @@
 
 #pragma kernel CSMain
 
-#if defined(SHADER_API_D3D11) 
-#define FLIP_UVS 1 
+#if defined(SHADER_API_D3D11)
+#define FLIP_UVS 1
 #endif
 
 StructuredBuffer<float2> Requests;
@@ -15,8 +15,8 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 {
 	const uint i = id.x;
 	
-	float3 ndc = float3(Requests[i].x, Requests[i].y, 0);
-	ndc.z = agDepthSample(ndc.xy);
+	float3 ndc = float3(Requests[i].x, Requests[i].y, 1);
+	ndc.z = agDepthSample(ndc.xy, 0);
 	
-	Results[i] = agDepthNDCtoWorld(ndc);
+	Results[i] = agDepthNDCtoWorld(ndc, 0);
 }

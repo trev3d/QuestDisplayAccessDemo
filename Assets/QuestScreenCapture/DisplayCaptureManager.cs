@@ -7,6 +7,27 @@ namespace Anaglyph.DisplayCapture
 	[DefaultExecutionOrder(-1000)]
 	public class DisplayCaptureManager : MonoBehaviour
 	{
+		public static DisplayCaptureManager Instance { get; private set; }
+
+		public bool startScreenCaptureOnStart = true;
+		public bool flipTextureOnGPU = false;
+
+		[SerializeField] private Vector2Int textureSize = new(1024, 1024);
+		public Vector2Int Size => textureSize;
+
+		private Texture2D screenTexture;
+		public Texture2D ScreenCaptureTexture => screenTexture;
+		
+		private RenderTexture flipTexture;
+
+		public Matrix4x4 ProjectionMatrix { get; private set; }
+
+		public UnityEvent<Texture2D> OnTextureInitialized = new();
+		public UnityEvent OnScreenCaptureStarted = new();
+		public UnityEvent OnScreenCapturePermissionDeclined = new();
+		public UnityEvent OnScreenCaptureStopped = new();
+		public UnityEvent OnNewFrame = new();
+
 		private unsafe sbyte* imageData;
 		private int bufferSize;
 
@@ -33,23 +54,6 @@ namespace Anaglyph.DisplayCapture
 		}
 
 		private AndroidInterface androidInterface;
-
-		public static DisplayCaptureManager Instance { get; private set; }
-
-		private Texture2D screenTexture;
-		private RenderTexture flipTexture;
-		public Texture2D ScreenCaptureTexture => screenTexture;
-
-		public bool startScreenCaptureOnStart = true;
-		public bool flipTextureOnGPU = false;
-
-		public UnityEvent<Texture2D> OnTextureInitialized = new();
-		public UnityEvent OnScreenCaptureStarted = new();
-		public UnityEvent OnScreenCapturePermissionDeclined = new();
-		public UnityEvent OnScreenCaptureStopped = new();
-		public UnityEvent OnNewFrame = new();
-
-		public static readonly Vector2Int Size = new(1024, 1024);
 
 		private void Awake()
 		{
@@ -83,9 +87,9 @@ namespace Anaglyph.DisplayCapture
 			androidInterface.StopCapture();
 		}
 
-
 		// Messages sent from Android
-		
+
+#pragma warning disable IDE0051 // Remove unused private members
 		private unsafe void OnCaptureStarted()
 		{
 			OnScreenCaptureStarted.Invoke();
@@ -116,5 +120,6 @@ namespace Anaglyph.DisplayCapture
 		{
 			OnScreenCaptureStopped.Invoke();
 		}
+#pragma warning restore IDE0051 // Remove unused private members
 	}
 }
