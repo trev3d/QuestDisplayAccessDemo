@@ -51,9 +51,11 @@ namespace Anaglyph.DisplayCapture
 
 					Vector2Int size = DisplayCaptureManager.Instance.Size;
 					Vector3 toWorld = headTransform.MultiplyPoint(-Unproject(displayCaptureProjection, new Vector2(1f - p.x / (float)size.x, p.y / (float)size.y)));
-					//indicators[i].position = toWorld;
-					screenPoints[i] = camera.WorldToViewportPoint(toWorld, Camera.MonoOrStereoscopicEye.Left);
-					//screenPoints[i].x *= 1.5f;
+					toWorld = camera.transform.worldToLocalMatrix.MultiplyPoint(toWorld);
+					Vector2 uv = Project(camera.GetStereoProjectionMatrix(Camera.StereoscopicEye.Left), toWorld);
+
+					uv = new Vector2(1f - uv.x, 1f - uv.y);
+					screenPoints[i] = uv;
 				}
 
 				DepthToWorld.Sample(screenPoints, out Vector3[] worldPoints);
@@ -65,40 +67,22 @@ namespace Anaglyph.DisplayCapture
 			}
 		}
 
-		private static Vector3 Project(Matrix4x4 projection, Vector3 )
+		private static Vector3 Project(Matrix4x4 projection, Vector3 world)
 		{
-			float[] inn = new float[4];
+			var h = new Vector4(world.x, world.y, world.z, 1f);
 
-			inn[0] = 2.0f * uv.x - 1.0f;
-			inn[1] = 2.0f * uv.y - 1.0f;
-			inn[2] = 0.1f;
-			inn[3] = 1.0f;
+			Vector4 posh = projection * h;
 
-			Vector4 pos = projection.inverse * new Vector4(inn[0], inn[1], inn[2], inn[3]);
-
-			pos.w = 1.0f / pos.w;
-
-			pos.x *= pos.w;
-			pos.y *= pos.w;
-			pos.z *= pos.w;
-
-			return new Vector3(pos.x, pos.y, pos.z);
+			return (new Vector3(posh.x, posh.y, posh.z) / posh.w + Vector3.one) / 2f;
 		}
 
 		private static Vector3 Unproject(Matrix4x4 projection, Vector2 uv)
 		{
-
 			var h = new Vector4(2f * uv.x - 1f, 2f * uv.y - 1f, 0.1f, 1f);
 
 			Vector4 pos = projection.inverse * h;
 
-			pos.w = 1.0f / pos.w;
-
-			pos.x *= pos.w;
-			pos.y *= pos.w;
-			pos.z *= pos.w;
-
-			return new Vector3(pos.x, pos.y, pos.z);
+			return new Vector3(pos.x, pos.y, pos.z) / pos.w;
 		}
 	}
 }
