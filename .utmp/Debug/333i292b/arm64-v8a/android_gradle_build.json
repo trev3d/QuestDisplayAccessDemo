@@ -1,8 +1,8 @@
 {
   "buildFiles": [
-    "C:\\Users\\jt\\source\\camaccess\\Library\\Bee\\Android\\Prj\\IL2CPP\\Gradle\\unityLibrary\\src\\main\\cpp\\CMakeLists.txt",
-    "C:\\Users\\jt\\source\\camaccess\\Library\\Bee\\Android\\Prj\\IL2CPP\\Gradle\\unityLibrary\\src\\main\\cpp\\FramePacing\\CMakeLists.txt",
-    "C:\\Users\\jt\\source\\camaccess\\Library\\Bee\\Android\\Prj\\IL2CPP\\Gradle\\unityLibrary\\src\\main\\cpp\\GameActivity\\CMakeLists.txt"
+    "C:\\Users\\jt\\source\\camaccess\\Library\\PramData\\AndroidApplicationController\\Cache\\ph.anagly.mediaprojectiondemo\\gradle-project\\unityLibrary\\src\\main\\cpp\\CMakeLists.txt",
+    "C:\\Users\\jt\\source\\camaccess\\Library\\PramData\\AndroidApplicationController\\Cache\\ph.anagly.mediaprojectiondemo\\gradle-project\\unityLibrary\\src\\main\\cpp\\FramePacing\\CMakeLists.txt",
+    "C:\\Users\\jt\\source\\camaccess\\Library\\PramData\\AndroidApplicationController\\Cache\\ph.anagly.mediaprojectiondemo\\gradle-project\\unityLibrary\\src\\main\\cpp\\GameActivity\\CMakeLists.txt"
   ],
   "cleanCommandsComponents": [
     [
@@ -23,14 +23,14 @@
       "toolchain": "toolchain",
       "abi": "arm64-v8a",
       "artifactName": "game",
-      "output": "C:\\Users\\jt\\source\\camaccess\\Library\\Bee\\Android\\Prj\\IL2CPP\\Gradle\\unityLibrary\\build\\intermediates\\cxx\\Debug\\333i292b\\obj\\arm64-v8a\\libgame.so",
+      "output": "C:\\Users\\jt\\source\\camaccess\\Library\\PramData\\AndroidApplicationController\\Cache\\ph.anagly.mediaprojectiondemo\\gradle-project\\unityLibrary\\build\\intermediates\\cxx\\Debug\\333i292b\\obj\\arm64-v8a\\libgame.so",
       "runtimeFiles": []
     },
     "swappywrapper::@7e25bd1f32ce224db4e9": {
       "toolchain": "toolchain",
       "abi": "arm64-v8a",
       "artifactName": "swappywrapper",
-      "output": "C:\\Users\\jt\\source\\camaccess\\Library\\Bee\\Android\\Prj\\IL2CPP\\Gradle\\unityLibrary\\build\\intermediates\\cxx\\Debug\\333i292b\\obj\\arm64-v8a\\libswappywrapper.so",
+      "output": "C:\\Users\\jt\\source\\camaccess\\Library\\PramData\\AndroidApplicationController\\Cache\\ph.anagly.mediaprojectiondemo\\gradle-project\\unityLibrary\\build\\intermediates\\cxx\\Debug\\333i292b\\obj\\arm64-v8a\\libswappywrapper.so",
       "runtimeFiles": []
     }
   },

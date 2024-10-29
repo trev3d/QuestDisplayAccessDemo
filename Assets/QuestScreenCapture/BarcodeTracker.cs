@@ -1,7 +1,7 @@
 using Anaglyph.XRTemplate.DepthKit;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace Anaglyph.DisplayCapture
 {
@@ -11,34 +11,50 @@ namespace Anaglyph.DisplayCapture
 
 		[SerializeField] private float horizontalFieldOfViewDegrees = 82f;
 		public float Fov => horizontalFieldOfViewDegrees;
-
-		[SerializeField] private Transform[] indicators;
-
 		private Matrix4x4 displayCaptureProjection;
-		private new Camera camera;
+
+		private List<Result> results = new();
+		public IEnumerable<Result> Results => results;
+
+		public event Action<IEnumerable<Result>> OnTrackBarcodes = delegate { };
+
+		public struct Result
+		{
+			public string text;
+			public Vector3[] corners; // 4 points
+
+			public Result(string text)
+			{
+				this.text = text;
+				corners = new Vector3[4];
+			}
+		}
 
 		private void Awake()
 		{
-			barcodeReader.OnTrackBarcodes += OnTrackBarcodes;
+			barcodeReader.OnReadBarcodes += OnReadBarcodes;
 
 			Vector2Int size = DisplayCaptureManager.Instance.Size;
 			float aspect = size.x / (float)size.y;
 
 			displayCaptureProjection = Matrix4x4.Perspective(Fov, aspect, 1, 100f);
-			camera = Camera.main;
 		}
 
 		private void OnDestroy()
 		{
-			barcodeReader.OnTrackBarcodes -= OnTrackBarcodes;
+			if(barcodeReader != null)
+				barcodeReader.OnReadBarcodes -= OnReadBarcodes;
 		}
 
-		private void OnTrackBarcodes(IEnumerable<BarcodeReader.Result> results)
+		private void OnReadBarcodes(IEnumerable<BarcodeReader.Result> barcodeResults)
 		{
+			results.Clear();
 
-			foreach (BarcodeReader.Result result in results)
+			foreach (BarcodeReader.Result barcodeResult in barcodeResults)
 			{
-				float timestampInSeconds = result.timestamp * 0.000000001f;
+				Result trackResult = new Result(barcodeResult.text);
+
+				float timestampInSeconds = barcodeResult.timestamp * 0.000000001f;
 				OVRPlugin.PoseStatef headPoseState = OVRPlugin.GetNodePoseStateAtTime(timestampInSeconds, OVRPlugin.Node.Head);
 				OVRPose headPose = headPoseState.Pose.ToOVRPose();
 				Matrix4x4 headTransform = Matrix4x4.TRS(headPose.position, headPose.orientation, Vector3.one);
@@ -47,7 +63,7 @@ namespace Anaglyph.DisplayCapture
 
 				for (int i = 0; i < 4; i++)
 				{
-					BarcodeReader.Point p = result.points[i];
+					BarcodeReader.Point p = barcodeResult.points[i];
 
 					Vector2Int size = DisplayCaptureManager.Instance.Size;
 
@@ -56,35 +72,24 @@ namespace Anaglyph.DisplayCapture
 					inWorld.z = -inWorld.z;
 					inWorld = headTransform.MultiplyPoint(inWorld);
 					worldPoints[i] = inWorld;
-
-					//indicators[i].position = toWorld;
 				}
 
-				DepthToWorld.SampleWorld(worldPoints, out Vector3[] worldPoints2);
+				DepthToWorld.SampleWorld(worldPoints, out worldPoints);
 
-				for (int i = 0; i < 4; i++)
-					indicators[i].position = worldPoints2[i];
+				trackResult.corners = worldPoints;
 
-				break;
+				results.Add(trackResult);
 			}
-		}
 
-		private static Vector3 Project(Matrix4x4 projection, Vector3 world)
-		{
-			var h = new Vector4(world.x, world.y, world.z, 1f);
-
-			Vector4 posh = projection * h;
-
-			return (new Vector3(posh.x, posh.y, posh.z) / posh.w + Vector3.one) / 2f;
+			OnTrackBarcodes.Invoke(results);
 		}
 
 		private static Vector3 Unproject(Matrix4x4 projection, Vector2 uv)
 		{
-			var h = new Vector4(2f * uv.x - 1f, 2f * uv.y - 1f, 0.1f, 1f);
-
-			Vector4 pos = projection.inverse * h;
-
-			return new Vector3(pos.x, pos.y, pos.z) / pos.w;
+			Vector2 v = 2f * uv - Vector2.one;
+			var p = new Vector4(v.x, v.y, 0.1f, 1f);
+			p = projection.inverse * p;
+			return new Vector3(p.x, p.y, p.z) / p.w;
 		}
 	}
 }

@@ -95,14 +95,14 @@
 				{
 					"directoryIndex" : 1,
 					"id" : "game::@d02bb112ea9f9c2ed29f",
-					"jsonFile" : "target-game-Debug-6b9cd0587b0cd73022d5.json",
+					"jsonFile" : "target-game-Debug-dab43e7f0ad0996b0bb8.json",
 					"name" : "game",
 					"projectIndex" : 1
 				},
 				{
 					"directoryIndex" : 2,
 					"id" : "swappywrapper::@7e25bd1f32ce224db4e9",
-					"jsonFile" : "target-swappywrapper-Debug-1470581dd6f080aac723.json",
+					"jsonFile" : "target-swappywrapper-Debug-1719e4817a5d6f2eb8d7.json",
 					"name" : "swappywrapper",
 					"projectIndex" : 2
 				}
@@ -113,7 +113,7 @@
 	"paths" : 
 	{
 		"build" : "C:/Users/jt/source/camaccess/.utmp/Debug/333i292b/arm64-v8a",
-		"source" : "C:/Users/jt/source/camaccess/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/src/main/cpp"
+		"source" : "C:/Users/jt/source/camaccess/Library/PramData/AndroidApplicationController/Cache/ph.anagly.mediaprojectiondemo/gradle-project/unityLibrary/src/main/cpp"
 	},
 	"version" : 
 	{

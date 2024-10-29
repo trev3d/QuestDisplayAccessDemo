@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -38,9 +37,11 @@ namespace Anaglyph.DisplayCapture
 				androidInstance = androidClass.CallStatic<AndroidJavaObject>("getInstance");
 				androidInstance.Call("setup", messageReceiver.name);
 			}
+
+			public void SetEnabled(bool enabled) => androidInstance.Call("setEnabled", enabled);
 		}
 
-		public event Action<IEnumerable<Result>> OnTrackBarcodes = delegate { };
+		public event Action<IEnumerable<Result>> OnReadBarcodes = delegate { };
 
 		private AndroidInterface androidInterface;
 
@@ -49,10 +50,19 @@ namespace Anaglyph.DisplayCapture
 			androidInterface = new AndroidInterface(gameObject);
 		}
 
+		private void OnDestroy()
+		{
+			OnReadBarcodes = delegate { };
+		}
+
+		// Called by Android 
+
+#pragma warning disable IDE0051 // Remove unused private members
 		private void OnBarcodeResults(string json)
 		{
 			Results results = JsonUtility.FromJson<Results>(json);
-			OnTrackBarcodes.Invoke(results.results);
+			OnReadBarcodes.Invoke(results.results);
 		}
+#pragma warning restore IDE0051 // Remove unused private members
 	}
 }
