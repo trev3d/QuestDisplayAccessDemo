@@ -17,17 +17,18 @@ MonoBehaviour:
   SharedDepthBuffer: 1
   DepthSubmission: 0
   DashSupport: 1
-  LowOverheadMode: 0
+  LowOverheadMode: 1
   OptimizeBufferDiscards: 1
   PhaseSync: 1
   SymmetricProjection: 1
   SubsampledLayout: 0
   FoveatedRenderingMethod: 0
-  LateLatching: 0
+  LateLatching: 1
   LateLatchingDebug: 0
   EnableTrackingOriginStageMode: 0
   SpaceWarp: 0
   TargetQuest2: 1
-  TargetQuestPro: 0
-  TargetQuest3: 0
+  TargetQuestPro: 1
+  TargetQuest3: 1
   SystemSplashScreen: {fileID: 0}
+  UseStickControlThumbsticks: 0
