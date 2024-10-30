@@ -65,7 +65,7 @@ implementation 'com.google.code.gson:gson:2.11.0'
 
 ### Gotchas
 
-⚠️⚠️⚠️ Google's ML barcode scanner annoyingly reorders corner point order so that codes always face 'up' relative to the viewer. This makes it near impossible to properly track the orientation of flat-facing codes :(
+⚠️⚠️⚠️ Google's ML barcode scanner annoyingly reorders corner point order so that codes always face 'up' relative to the viewer. This makes it near impossible to properly track the orientation of flat-facing codes as the codes will always face toward you. I'm going to replace this library with ZXing in a future commit :(
 
 ⚠️ While display capture and QR code reading will work on any headset, QR code *tracking* will only work on Quest 3 / Quest 3S due to other headsets lacking depth estimation features.
 
