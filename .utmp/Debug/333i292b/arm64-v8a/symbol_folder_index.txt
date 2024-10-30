@@ -1,0 +1,1 @@
+C:\Users\jt\source\camaccess\Library\PramData\AndroidApplicationController\Cache\ph.anagly.mediaprojectiondemo\gradle-project\unityLibrary\build\intermediates\cxx\Debug\333i292b\obj\arm64-v8a
