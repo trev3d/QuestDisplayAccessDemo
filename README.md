@@ -6,7 +6,9 @@ Developers want camera access on the Meta Quest. Meta hasn't let us have it yet.
 
 ## Special thanks
 
-[t-34400's QuestMediaProjection repo](https://github.com/t-34400/QuestMediaProjection) demonstrated using Google's ML barcode reader.
+[@t-34400's QuestMediaProjection repo](https://github.com/t-34400/QuestMediaProjection) demonstrated using Google's ML barcode reader.
+
+[@Gustorvo](https://github.com/Gustorvo)'s pull request replaced a texture copy over the JNI with a pointer 
 
 ## Setup
 
@@ -65,9 +67,9 @@ implementation 'com.google.code.gson:gson:2.11.0'
 
 ### Gotchas
 
-⚠️ While display capture and QR code reading will work on any headset, QR code *tracking* will only work on Quest 3 / Quest 3S due to other headsets lacking depth estimation features.
+⚠️⚠️⚠️ Google's ML barcode scanner annoyingly reorders corner point order so that codes always face 'up' relative to the viewer. This makes it near impossible to properly track the orientation of flat-facing codes as the codes will always face toward you. I'm going to replace this library with ZXing in a future commit :(
 
-⚠️ To set this up in an existing project, you'll need the app to launch with the `UnityPlayerActivityWithMediaProjector` activity. To set this up you need to modify your `AndroidManifest` file. For more info, see [this page](https://docs.unity3d.com/Manual/android-custom-activity.html).
+⚠️ While display capture and QR code reading will work on any headset, QR code *tracking* will only work on Quest 3 / Quest 3S due to other headsets lacking depth estimation features.
 
 ⚠️ Display capture is expensive, as is QR code tracking
 
