@@ -7,7 +7,8 @@ Developers want camera access on the Meta Quest. Meta hasn't let us have it yet.
 ## Special thanks
 
 [@t-34400's QuestMediaProjection repo](https://github.com/t-34400/QuestMediaProjection) demonstrated using Google's ML barcode reader.
-[@Gustorvo]'s pull request replaced a texture copy over the JNI with a pointer 
+
+[@Gustorvo](https://github.com/Gustorvo)'s pull request replaced a texture copy over the JNI with a pointer 
 
 ## Setup
 
