@@ -1,13 +1,19 @@
 apply plugin: 'com.android.library'
-apply from: '../shared/keepUnitySymbols.gradle'
+// apply from: '../shared/keepUnitySymbols.gradle'
 **APPLY_PLUGINS**
+
+configurations.all {
+    resolutionStrategy.force 'androidx.appcompat:appcompat:1.5.1'
+    resolutionStrategy.force 'androidx.appcompat:appcompat-resources:1.5.1'
+}
 
 dependencies {
     
 
 
     /* ADD THESE LINES TO YOUR GRADLE DEPENDENCIES SECTION */
-    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'androidx.appcompat:appcompat-resources:1.5.1'
     implementation 'com.google.mlkit:barcode-scanning:17.3.0'
     implementation 'com.google.code.gson:gson:2.11.0'
     /* ADD THESE LINES TO YOUR GRADLE DEPENDENCIES SECTION */
@@ -22,17 +28,18 @@ android {
     ndkPath "**NDKPATH**"
     ndkVersion "**NDKVERSION**"
 
-    compileSdk **APIVERSION**
+    compileSdkVersion 33
     buildToolsVersion = "**BUILDTOOLS**"
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
 
     defaultConfig {
-        minSdk **MINSDK**
-        targetSdk **TARGETSDK**
+        minSdkVersion **MINSDKVERSION**
+        compileSdkVersion 33
+        targetSdkVersion **TARGETSDKVERSION**
         ndk {
             abiFilters **ABIFILTERS**
             debugSymbolLevel **DEBUGSYMBOLLEVEL**

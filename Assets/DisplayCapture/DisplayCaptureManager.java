@@ -40,7 +40,12 @@ public class DisplayCaptureManager implements ImageReader.OnImageAvailableListen
 
 	private UnityInterface unityInterface;
 
-	private record UnityInterface(String gameObjectName) {
+	private static class UnityInterface {
+		private final String gameObjectName;
+
+		private UnityInterface(String gameObjectName) {
+			this.gameObjectName = gameObjectName;
+		}
 
 		private void Call(String functionName) {
 			UnityPlayer.UnitySendMessage(gameObjectName, functionName, "");
@@ -91,7 +96,7 @@ public class DisplayCaptureManager implements ImageReader.OnImageAvailableListen
 
 			Log.i(TAG, "Starting screen capture...");
 
-			var projectionManager = (MediaProjectionManager)
+			MediaProjectionManager projectionManager = (MediaProjectionManager)
 					UnityPlayer.currentContext.getSystemService(Context.MEDIA_PROJECTION_SERVICE);
 			projection = projectionManager.getMediaProjection(resultCode, intent);
 

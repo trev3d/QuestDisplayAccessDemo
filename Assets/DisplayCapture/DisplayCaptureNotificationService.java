@@ -14,7 +14,7 @@ import android.content.pm.ServiceInfo;
 import android.graphics.Color;
 import android.os.IBinder;
 import android.util.Log;
-import com.unity3d.player.UnityPlayerForGameActivity;
+import com.unity3d.player.UnityPlayerActivity;
 
 
 public class DisplayCaptureNotificationService extends Service {
@@ -30,7 +30,7 @@ public class DisplayCaptureNotificationService extends Service {
 
 		Intent activityIntent = new Intent(
 				this,
-				UnityPlayerForGameActivity.class);
+				UnityPlayerActivity.class);
 		activityIntent.setAction("stop");
 		PendingIntent contentIntent = PendingIntent.getActivity(
 				this,
