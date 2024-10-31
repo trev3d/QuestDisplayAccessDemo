@@ -1,13 +1,47 @@
 apply plugin: 'com.android.library'
-apply from: '../shared/keepUnitySymbols.gradle'
+// apply from: '../shared/keepUnitySymbols.gradle'
 **APPLY_PLUGINS**
+
+configurations.all {
+    resolutionStrategy {
+        eachDependency { DependencyResolveDetails details ->
+            if (details.requested.group == 'androidx.appcompat') {
+                details.useVersion "1.5.1"
+            }
+            if (details.requested.group == 'androidx.core') {
+                details.useVersion "1.8.0"
+            }
+            if (details.requested.group == 'androidx.activity') {
+                details.useVersion "1.5.1"
+            }
+            if (details.requested.name == 'annotation-experimental') {
+                details.useVersion "1.2.0"
+            }
+        }
+    }
+}
 
 dependencies {
     
-
-
     /* ADD THESE LINES TO YOUR GRADLE DEPENDENCIES SECTION */
-    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation('androidx.appcompat:appcompat:1.5.1') {
+        force = true
+    }
+    implementation('androidx.appcompat:appcompat-resources:1.5.1') {
+        force = true
+    }
+    implementation('androidx.core:core:1.8.0') {
+        force = true
+    }
+    implementation('androidx.core:core-ktx:1.8.0') {
+        force = true
+    }
+    implementation('androidx.activity:activity:1.5.1') {
+        force = true
+    }
+    implementation('androidx.annotation:annotation-experimental:1.2.0') {
+        force = true
+    }
     implementation 'com.google.mlkit:barcode-scanning:17.3.0'
     implementation 'com.google.code.gson:gson:2.11.0'
     /* ADD THESE LINES TO YOUR GRADLE DEPENDENCIES SECTION */
@@ -22,17 +56,17 @@ android {
     ndkPath "**NDKPATH**"
     ndkVersion "**NDKVERSION**"
 
-    compileSdk **APIVERSION**
+    compileSdkVersion 32
     buildToolsVersion = "**BUILDTOOLS**"
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
 
     defaultConfig {
-        minSdk **MINSDK**
-        targetSdk **TARGETSDK**
+        minSdkVersion **MINSDKVERSION**
+        targetSdkVersion **TARGETSDKVERSION**
         ndk {
             abiFilters **ABIFILTERS**
             debugSymbolLevel **DEBUGSYMBOLLEVEL**

@@ -55,7 +55,13 @@ public class BarcodeReader implements IDisplayCaptureReceiver {
 
 	private UnityInterface unityInterface;
 
-	private record UnityInterface(String gameObjectName) {
+	private static class UnityInterface {
+		private final String gameObjectName;
+
+		private UnityInterface(String gameObjectName) {
+			this.gameObjectName = gameObjectName;
+		}
+
 		private void Call(String functionName) {
 			UnityPlayer.UnitySendMessage(gameObjectName, functionName, "");
 		}
@@ -66,13 +72,11 @@ public class BarcodeReader implements IDisplayCaptureReceiver {
 	}
 
 	public BarcodeReader() {
-
-		var optBuilder = new BarcodeScannerOptions.Builder();
+		BarcodeScannerOptions.Builder optBuilder = new BarcodeScannerOptions.Builder();
 		optBuilder.setBarcodeFormats(Barcode.FORMAT_QR_CODE);
 		optBuilder.build();
 
 		scanner = BarcodeScanning.getClient(optBuilder.build());
-
 		gson = new Gson();
 	}
 
@@ -103,7 +107,7 @@ public class BarcodeReader implements IDisplayCaptureReceiver {
 		if(readingBarcode)
 			return;
 
-		var bitmap = Bitmap.createBitmap(
+		Bitmap bitmap = Bitmap.createBitmap(
 				width,
 				height,
 				Bitmap.Config.ARGB_8888
@@ -124,7 +128,7 @@ public class BarcodeReader implements IDisplayCaptureReceiver {
 				return;
 			}
 
-			var taskResult = task.getResult();
+			List<Barcode> taskResult = task.getResult();
 			Results results = new Results(taskResult.size());
 
 			Log.i(TAG, taskResult.size() + " barcodes found.");
@@ -137,7 +141,7 @@ public class BarcodeReader implements IDisplayCaptureReceiver {
 				result.text = barcode.getDisplayValue();
 				result.timestamp = timestamp;
 
-				var cornerPoints = Objects.requireNonNull(barcode.getCornerPoints());
+				android.graphics.Point[] cornerPoints = Objects.requireNonNull(barcode.getCornerPoints());
 				result.points = new Point[cornerPoints.length];
 				for(int j = 0; j < cornerPoints.length; j++)
 					result.points[j] = new Point(cornerPoints[j]);

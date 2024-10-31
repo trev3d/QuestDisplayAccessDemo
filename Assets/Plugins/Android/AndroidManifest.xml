@@ -25,7 +25,8 @@
 		<!--ADD THESE LINES TO YOUR MANIFEST <APPLICATION> SECTION!!!-->
 
 		
-		<activity android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenLayout|screenSize|uiMode|density" android:excludeFromRecents="true" android:exported="true" android:hardwareAccelerated="false" android:launchMode="singleTask" android:name="com.unity3d.player.UnityPlayerGameActivity" android:resizeableActivity="false" android:screenOrientation="landscape" android:theme="@style/BaseUnityGameActivityTheme">
+		<activity android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenLayout|screenSize|uiMode|density" android:excludeFromRecents="true" android:exported="true" android:hardwareAccelerated="false" android:launchMode="singleTask" android:name="com.unity3d.player.UnityPlayerActivity"
+                  android:theme="@style/UnityThemeSelector" android:resizeableActivity="false" android:screenOrientation="landscape" >
 			<intent-filter>
 				<category android:name="android.intent.category.LAUNCHER" />
 				<category android:name="com.oculus.intent.category.VR" />
