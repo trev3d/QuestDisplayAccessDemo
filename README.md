@@ -71,8 +71,6 @@ implementation 'com.google.code.gson:gson:2.11.0'
 
 ⚠️ While display capture and QR code reading will work on any headset, QR code *tracking* will only work on Quest 3 / Quest 3S due to other headsets lacking depth estimation features.
 
-⚠️ To set this up in an existing project, you'll need the app to launch with the `UnityPlayerActivityWithMediaProjector` activity. To set this up you need to modify your `AndroidManifest` file. For more info, see [this page](https://docs.unity3d.com/Manual/android-custom-activity.html).
-
 ⚠️ Display capture is expensive, as is QR code tracking
 
 ⚠️ You may need to be on Quest system software v68 or higher
