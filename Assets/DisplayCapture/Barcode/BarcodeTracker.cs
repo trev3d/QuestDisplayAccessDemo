@@ -22,11 +22,19 @@ namespace Anaglyph.DisplayCapture.Barcodes
 		{
 			public string text;
 			public Vector3[] corners; // 4 points
+			// for zxing:
+			// 0, bottom left
+			// 1, top left
+			// 2, top right
+			// 3, bottom right
+
+			public Pose pose;
 
 			public Result(string text)
 			{
 				this.text = text;
 				corners = new Vector3[4];
+				pose = new Pose();
 			}
 		}
 
@@ -75,6 +83,16 @@ namespace Anaglyph.DisplayCapture.Barcodes
 				}
 
 				DepthToWorld.SampleWorld(worldPoints, out trackResult.corners);
+
+				var corners = trackResult.corners;
+
+				Vector3 up = (corners[1] - corners[0]).normalized;
+				Vector3 right = (corners[2] - corners[1]).normalized;
+				Vector3 normal = -Vector3.Cross(up, right).normalized;
+
+				Vector3 center = (corners[2] + corners[0]) / 2f;
+
+				trackResult.pose = new Pose(center, Quaternion.LookRotation(normal, up));
 
 				results.Add(trackResult);
 			}

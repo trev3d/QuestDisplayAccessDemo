@@ -10,6 +10,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.mlkit:barcode-scanning:17.3.0'
     implementation 'com.google.code.gson:gson:2.11.0'
+    implementation 'com.google.zxing:core:3.5.3'
     /* ADD THESE LINES TO YOUR GRADLE DEPENDENCIES SECTION */
 
 
